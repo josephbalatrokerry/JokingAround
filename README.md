@@ -1,4 +1,4 @@
-![Screenshot](JokingAround/logo/JALogo.png)
+![Screenshot](joking-around/JokingAround/logo/JALogo.png)
 
 # Your average Balatro mod…
 
