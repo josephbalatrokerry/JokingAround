@@ -1,0 +1,13 @@
+{
+    "id": "jokingaround",
+    "name": "Joking Around",
+    "author": ["Temmy1"],
+    "description": "Knock-knock: Why did Jimbo cross the road? To walk into a bar! (This mod adds 3 new Common and Uncommon Jokers and 4 new Rare Jokers sponsored by Joker Inc.)",
+    "prefix": "joking",
+    "main_file": "JokingAround.lua",
+    "badge_colour": "cb3cc5",
+    "dependencies": [
+        "Steamodded (>=1.0.0~ALPHA-1225a)"
+    ],
+    "version": "1.0.0"
+}
