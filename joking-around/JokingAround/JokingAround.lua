@@ -7,6 +7,8 @@ SMODS.Atlas {
 
 SMODS.Joker {
     key = "bonus",
+    unlocked = true,
+
 	loc_txt = {
 		name = 'Bonus Joker',
 		text = {
@@ -155,7 +157,8 @@ end
 
 SMODS.Joker {
     key = "snowballing",
-		loc_txt = {
+    unlocked = true,
+	loc_txt = {
 		name = 'Snowballing Joker',
 		text = {	
 			"When {C:attention}Blind{} is selected, set Hands to {C:chips}#1#{},",
@@ -205,6 +208,7 @@ SMODS.Joker {
 
 SMODS.Joker {
     key = "shopaholism",
+    unlocked = true,
 	loc_txt = {
 		name = 'Shopaholism',
 		text = {
@@ -247,7 +251,8 @@ SMODS.Joker {
 
 SMODS.Joker {
     key = "dystopia",
-		loc_txt = {
+    unlocked = true,
+	loc_txt = {
 		name = 'Dystopia',
 		text = {
 			"If all played cards share the same suit and",
@@ -255,7 +260,6 @@ SMODS.Joker {
 			"all played cards give {X:mult,C:white}X#1#{} Mult"
 		}
 	},
-    unlocked = true,
     blueprint_compat = true,
     rarity = 3,
     cost = 8,
@@ -326,7 +330,7 @@ SMODS.Joker {
 
 SMODS.Joker {
     key = "income",
-		loc_txt = {
+	loc_txt = {
 		name = 'Income Report',
 		text = {
 			"This Joker gains {C:mult}+#1#{} Mult at the end of", 
@@ -443,7 +447,8 @@ SMODS.Joker {
 
 SMODS.Joker {
     key = "canvas",
-		loc_txt = {
+    unlocked = true,
+	loc_txt = {
 		name = 'Canvas',
 		text = {
 			"{C:attention}+#1#{} hand size at first hand of round",
@@ -479,6 +484,7 @@ end
 
 SMODS.Joker {
     key = "consolidation",
+    unlocked = true,
 	loc_txt = {
 		name = 'Consolidation',
 		text = {
