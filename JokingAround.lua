@@ -8,7 +8,6 @@ SMODS.Atlas {
 SMODS.Joker {
     key = "bonus",
     unlocked = true,
-
 	loc_txt = {
 		name = 'Bonus Joker',
 		text = {
@@ -101,6 +100,7 @@ SMODS.Joker {
 
 		}
 	},
+    perishable_compat = false,
     unlocked = true,
 	atlas = 'JokingAround',
     blueprint_compat = true,
@@ -217,6 +217,7 @@ SMODS.Joker {
 			"({C:inactive}Currently {X:mult,C:white}X#2#{C:inactive} Mult)"
 		}
 	},
+    perishable_compat_compat = false,
     blueprint_compat = true,
     rarity = 2,
 	atlas = 'JokingAround',
@@ -338,6 +339,7 @@ SMODS.Joker {
 			"{C:inactive}(Currently {C:mult}+#3#{C:inactive} Mult)"
 		}
 	},
+    perishable_compat = false,
     unlocked = true,
     blueprint_compat = true,
     rarity = 1,
@@ -554,3 +556,109 @@ SMODS.Joker {
     end
 }
 
+
+SMODS.Joker {
+    key = "pinata",
+    loc_txt = {
+		name = 'Pinata',
+		text = {
+			"Create a pair of random negative {C:attention}Consumables{}",
+            "when {C:attention}Blind{} is selected",
+            "{C:inactive}(#1# Rounds left){}",
+            "{s:0.8,C:green}#2# in #3#{s:0.8} chance for creating a Spectral card,{s:0.8,C:green}",
+            "#2# in #4#{s:0.8} chance for creating a Planet card.",
+            "{s:0.8}If none of probabilities trigger, create a Tarot card"
+		}
+	},
+    unlocked = true,
+    blueprint_compat = false,
+    rarity = 2,
+    cost = 8,
+    eternal_compat = false,
+    atlas = 'JokingAround',
+    pos = { x = 5, y = 0 },
+    config = { extra = {rounds_left = 3, spectral_odds = 5, planet_odds = 3} },
+    loc_vars = function(self, info_queue, card)
+        return { vars = { card.ability.extra.rounds_left, (G.GAME.probabilities.normal or 1), card.ability.extra.spectral_odds, card.ability.extra.planet_odds} }
+    end,
+
+    calculate = function(self, card, context)
+        if context.setting_blind then
+            local consumable_1 = 'Tarot'
+            local consumable_2 = 'Tarot'
+            if pseudorandom('joking_spectral_pinata') < G.GAME.probabilities.normal / card.ability.extra.spectral_odds then
+                consumable_1 = 'Spectral'
+            else
+                if pseudorandom('joking_planet_pinata') < G.GAME.probabilities.normal / card.ability.extra.planet_odds then
+                    consumable_1 = 'Planet'
+                end
+            end
+            
+            if pseudorandom('joking_spectral_pinata') < G.GAME.probabilities.normal / card.ability.extra.spectral_odds then
+                consumable_2 = 'Spectral'
+            else
+                if pseudorandom('joking_planet_pinata') < G.GAME.probabilities.normal / card.ability.extra.planet_odds then
+                    consumable_2 = 'Planet'
+                end
+            end
+            
+            if card.ability.extra.rounds_left <= 1 then
+                G.E_MANAGER:add_event(Event({
+                    func = function()
+                        -- This replicates the food destruction effect
+                        -- If you want a simpler way to destroy Jokers, you can do card:start_dissolve() for a dissolving animation
+                        -- or just card:remove() for no animation
+                            SMODS.add_card ({
+                            set = consumable_1,
+                            key_append = 'joking_pinata',
+                            edition = 'e_negative'
+                        })
+                            SMODS.add_card ({
+                            set = consumable_2,
+                            key_append = 'joking_pinata',
+                            edition = 'e_negative'
+                        })
+                        play_sound('tarot1')
+                        card.T.r = -0.2
+                        card:juice_up(0.3, 0.4)
+                        card.states.drag.is = true
+                        card.children.center.pinch.x = true
+                        G.E_MANAGER:add_event(Event({
+                            trigger = 'after',
+                            delay = 0.3,
+                            blockable = false,
+                            func = function()
+                                card:remove()
+                                return true
+                            end
+                        }))
+                        return true
+                    end
+                }))
+                return {
+                    message = 'Beaten!'
+                }
+
+            else
+                card.ability.extra.rounds_left = card.ability.extra.rounds_left - 1
+                G.E_MANAGER:add_event(Event({
+                func = function()
+                        SMODS.add_card ({
+                            set = consumable_1,
+                            key_append = 'joking_pinata',
+                            edition = 'e_negative'
+                        })
+                        SMODS.add_card ({
+                            set = consumable_2,
+                            key_append = 'joking_pinata',
+                            edition = 'e_negative'
+                        })
+                        SMODS.calculate_effect({ message = 'Ouch!', colour = G.C.MULT },
+                                context.blueprint_card or card)
+                        return true
+                end
+            }))
+        end 
+        end
+    end
+}
