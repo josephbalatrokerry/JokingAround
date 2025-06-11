@@ -662,3 +662,52 @@ SMODS.Joker {
         end
     end
 }
+
+
+SMODS.Joker {
+    key = "aristocracy",
+    loc_txt = {
+		name = 'Aristocracy',
+		text = {
+			"When {C:attention}Boss Blind{} is defeated, create {C:attention}#1#{C:spectral} Wraith{} card",
+            "{C:inactive}(Must have room){}"
+		}
+	},
+    unlocked = true,
+    blueprint_compat = false,
+    rarity = 2,
+    cost = 8,
+    atlas = 'JokingAround',
+    pos = { x = 5, y = 1 },
+    config = { extra = {wraith_amount = 1} },
+    loc_vars = function(self, info_queue, card)
+        return { vars = {card.ability.extra.wraith_amount} }
+    end,
+
+    calculate = function(self, card, context)
+        if context.end_of_round and context.game_over == false and context.main_eval and not context.blueprint then
+            if G.GAME.blind.boss and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
+                local wraiths_to_create = math.min(card.ability.extra.wraith_amount, G.consumeables.config.card_limit - (#G.consumeables.cards + G.GAME.consumeable_buffer))
+                G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + wraiths_to_create
+        G.E_MANAGER:add_event(Event({
+                func = function()
+                    for _ = 1, wraiths_to_create do
+                        SMODS.add_card {
+                            set = 'Spectral',
+                            key_append = 'joking_aristocracy',
+                            key = "c_wraith"
+                             -- Optional, useful for checking the source of the creation in `in_pool`.
+                        }
+                        G.GAME.consumeable_buffer = 0
+                    end
+                    return true
+                end
+            }))
+            return {
+                message = string.format('+%d Spectral', wraiths_to_create),
+                colour = G.C.BLUE,
+            }
+        end
+        end
+    end
+}
