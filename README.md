@@ -2,17 +2,19 @@
 
 # Your average Balatro mod…
 
-That adds 10 new Jokers in total:
+That adds 12 new Jokers in total:
 
 > 4 Rare Jokers
 
-> 3 Common Jokers
+> 5 Common Jokers
 
 > 3 Uncommon Jokers
 
 (All Jokers are unlocked from the beginning)
 
 # Joker Descriptions:
+
+#1.0.0 (+10 new Jokers)
 
 # Rare Jokers
 
@@ -47,7 +49,18 @@ Gives +30 Chips and +4 Mult for each Bonus and Mult card respectively in your fu
 (coding this joker was pure pain) Sets sell prices of all Jokers to their buying price. You can essentially return Jokers now (and scale Campfire)
 
 ## Income Report
-Mult scaling Joker that gains +6 Mult if you leave the shop with exactly 10$ (I'd describe it as common Obelisk, can be powerful but miserable to use)
+Mult scaling Joker that gains +6 Mult if you leave the shop with exactly 10$ (I'd describe it as common Obelisk, has great scaling but feels miserable to use)
+
+# Version 1.1.0 (+2 new Jokers)
+
+# Uncommon
+## Pinata
+A 'food' (if you like eating papier-mâché) Joker that gives you 2 random consumables at the beginning of each round for next 3 rounds. 
+
+## Aristocracy
+Fancy counterpart of Riff-Raff which spawns a Wraith card at the end of every Ante.
+
+
 
 
 ### Made by Temmy1 (real name Jo.Ker, Joe Kerry) with help of my brother (real name Po.Ker, Poe Kerry) and [Balatro's Discord server](https://discord.com/invite/balatro)
