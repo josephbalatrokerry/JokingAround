@@ -214,7 +214,7 @@ SMODS.Joker {
 		text = {
 			"This Joker gains {X:mult,C:white}X#1#{} Mult when a Joker is bought,",
 			"resets when a Joker is sold",
-			"({C:inactive}Currently {X:mult,C:white}X#2#{C:inactive} Mult)"
+			"{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive} Mult)"
 		}
 	},
     perishable_compat_compat = false,
@@ -711,3 +711,53 @@ SMODS.Joker {
         end
     end
 }
+
+SMODS.Joker {
+    key = "ransom",
+    loc_txt = {
+		name = 'Ransom Joker',
+		text = {
+            "When a hand is played, add {C:attention}arithmetic mean{} of Chips",
+            "of all scored cards to this Joker's Chips",
+            "{C:inactive}(Currently {C:blue}+#1#{C:inactive})"
+		}
+	},
+    unlocked = true,
+    perishable_compat = false,
+    rarity = 1,
+    cost = 5,
+    atlas = 'JokingAround',
+    pos = { x = 0, y = 2 },
+    config = { extra = {chips = 0} },
+    loc_vars = function(self, info_queue, card)
+        return { vars = {card.ability.extra.chips} }
+    end,
+
+    calculate = function(self, card, context)  
+        if context.before and context.main_eval and not context.blueprint then
+            local chip_mod = 0
+            for _, scored_card in ipairs(context.scoring_hand) do
+                chip_mod = chip_mod + scored_card:get_chip_bonus() 
+            end
+            chip_mod = math.ceil(chip_mod / #context.scoring_hand)
+            card.ability.extra.chips = card.ability.extra.chips + chip_mod
+            return {
+                message = localize('k_upgrade_ex'),
+                colour = G.C.CHIPS,
+            }
+        end
+        if context.joker_main then
+            return {
+                    chips = card.ability.extra.chips
+                }
+            end
+    end
+}
+
+
+
+
+
+
+
+
