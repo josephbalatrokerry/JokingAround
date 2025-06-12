@@ -14,7 +14,7 @@ That adds 12 new Jokers in total:
 
 # Joker Descriptions:
 
-#1.0.0 (+10 new Jokers)
+# 1.0.0 (+10 new Jokers)
 
 # Rare Jokers
 
@@ -59,6 +59,14 @@ A 'food' (if you like eating papier-mâché) Joker that gives you 2 random consu
 
 ## Aristocracy
 Fancy counterpart of Riff-Raff which spawns a Wraith card at the end of every Ante.
+
+# Version 1.2.0 (+1 new Jokers)
+# Common
+# Ransom Joker
+A +Chips Joker that gains the arithmetic mean of all cards played's chips
+
+
+
 
 
 
