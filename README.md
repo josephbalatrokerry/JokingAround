@@ -6,9 +6,10 @@ That adds 15 new Jokers in total:
 
 > 5 Rare Jokers
 
+> 5 Uncommon Jokers
+
 > 5 Common Jokers
 
-> 5 Uncommon Jokers
 
 (All Jokers are unlocked from the beginning)
 
