@@ -67,8 +67,8 @@ A +Chips scaling Joker that gains the arithmetic mean of all cards played's chip
 
 # Version 1.3.0 (-1 Joker, +2 new Jokers)
 # Uncommon
-# Four-leaf Mirror
-A replacement for Alloy (which was scrapped), makes Lucky and Glass cards count and act as each other.
+## Four-leaf Mirror
+A replacement for Alloy (which was scrapped because it was banal and had lame art), makes Lucky and Glass cards count and act as each other.
 
 # Common
 ## Love Letter
