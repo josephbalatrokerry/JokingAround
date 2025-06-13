@@ -2,9 +2,9 @@
 
 # Your average Balatro mod…
 
-That adds 14 new Jokers in total:
+That adds 15 new Jokers in total:
 
-> 4 Rare Jokers
+> 5 Rare Jokers
 
 > 5 Common Jokers
 
@@ -60,7 +60,7 @@ A 'food' (if you like eating papier-mâché) Joker that gives you 2 random consu
 ## Aristocracy
 Fancy counterpart of Riff-Raff which spawns a Wraith card at the end of every Ante.
 
-# Version 1.2.0 (+1 new Jokers)
+# Version 1.2.0 (+1 new Joker)
 # Common
 ## Ransom Joker
 A +Chips scaling Joker that gains the arithmetic mean of all cards played's chips.
@@ -74,7 +74,10 @@ A replacement for Alloy (which was scrapped because it was banal and had lame ar
 ## Love Letter
 1 in 2 chance to turn scored cards to Hearts if played hand contains a Pair (with love from Lusty Joker)
 
+# Version 1.4.0 (+1 Joker)
 
+## Comeback
+Gives X4 XMult if you played your last discarded poker hand
 
 
 
