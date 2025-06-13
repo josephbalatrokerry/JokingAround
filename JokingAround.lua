@@ -265,7 +265,7 @@ SMODS.Joker {
 	},
     blueprint_compat = true,
     rarity = 3,
-    cost = 8,
+    cost = 7,
 	atlas = 'JokingAround',
     pos = { x = 4, y = 1 },
     config = { extra = { xmult = 1.5} },
@@ -370,17 +370,6 @@ SMODS.Joker {
 
 
 
---[[ local enhancement_ref = SMODS.has_enhancement()
-function SMODS:has_enhancement(enhancement, bypass_debuff)
-local d = oldhasenhancement(self, enhancement, bypass_debuff)
-    if not d and next(SMODS.find_card("j_joking_alloy")) then
-        return alloy_check(self, enhancement)
-    end
-    return d
-end
-function alloy_check(self, enhancement)
-
-end ]]
 --[[ 
 SMODS.Joker {
     key = "alloy",
@@ -567,9 +556,9 @@ SMODS.Joker {
 			"Create a pair of random negative {C:attention}Consumables{}",
             "when {C:attention}Blind{} is selected",
             "{C:inactive}(#1# Rounds left){}",
-            "{s:0.8,C:green}#2# in #3#{s:0.8} chance for creating a Spectral card,{s:0.8,C:green}",
-            "#2# in #4#{s:0.8} chance for creating a Planet card.",
-            "{s:0.8}If none of probabilities trigger, create a Tarot card"
+            "{s:0.8,C:green}#2# in #3#{s:0.8} chance for creating a {C:spectral,s:0.8}Spectral{} card,",
+            "{s:0.8,C:green}#2# in #4#{s:0.8} chance for creating a {C:planet,s:0.8}Planet{} card.",
+            "{s:0.8}If neither trigger, create a {C:tarot,s:0.8}Tarot{s:0.8} card"
 		}
 	},
     unlocked = true,
@@ -578,7 +567,7 @@ SMODS.Joker {
     cost = 8,
     eternal_compat = false,
     atlas = 'JokingAround',
-    pos = { x = 5, y = 0 },
+    pos = { x = 4, y = 2 },
     config = { extra = {rounds_left = 3, spectral_odds = 5, planet_odds = 3} },
     loc_vars = function(self, info_queue, card)
         return { vars = { card.ability.extra.rounds_left, (G.GAME.probabilities.normal or 1), card.ability.extra.spectral_odds, card.ability.extra.planet_odds} }
@@ -680,7 +669,7 @@ SMODS.Joker {
     rarity = 2,
     cost = 8,
     atlas = 'JokingAround',
-    pos = { x = 5, y = 1 },
+    pos = { x = 3, y = 2 },
     config = { extra = {wraith_amount = 1} },
     loc_vars = function(self, info_queue, card)
         return { vars = {card.ability.extra.wraith_amount} }
@@ -766,6 +755,7 @@ SMODS.Joker {
             "{C:attention}Glass{} cards are considered {C:attention}Lucky{} cards"
 		}
 	},
+    blueprint_compat = false,
     unlocked = true,
     rarity = 2,
     cost = 5,
@@ -835,6 +825,48 @@ SMODS.Joker {
     end
 }
 
+
+SMODS.Joker {
+    key = "come",
+    loc_txt = {
+		name = 'Comeback',
+		text = {
+            "{X:mult,C:white}X#1#{} Mult if the last {C:attention}discarded{} poker hand is played, ",
+            "{C:inactive}(Last discarded hand: {C:attention}#2#{C:inactive},",
+            "{C:inactive}becomes {C:attention}None{C:inactive} after last discarded hand is played)"
+		}
+
+	},
+    blueprint_compat = true,
+    unlocked = true,
+    rarity = 3,
+    cost = 7,
+    atlas = 'JokingAround',
+    pos = { x = 2, y = 2 },
+    config = { extra = {xmult = 4, discarded_type = 'None'} },
+    loc_vars = function(self, info_queue, card)
+        return { vars = {card.ability.extra.xmult, card.ability.extra.discarded_type} }
+    end,
+
+    calculate = function(self, card, context)  
+        if context.pre_discard and not context.hook then
+            local text, _ = G.FUNCS.get_poker_hand_info(G.hand.highlighted)
+            card.ability.extra.discarded_type = text
+            return
+            {
+                message = text
+            }
+        end
+        if context.joker_main then
+            if context.scoring_name == card.ability.extra.discarded_type then
+                card.ability.extra.discarded_type = 'None'
+                return {
+                    xmult = card.ability.extra.xmult
+                }
+            end
+        end
+    end
+}
 
 --[[ 
 SMODS.Joker {
