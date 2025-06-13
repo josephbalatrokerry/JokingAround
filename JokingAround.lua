@@ -5,6 +5,8 @@ SMODS.Atlas {
 	py = 95
 }
 
+SMODS.current_mod.optional_features = { quantum_enhancements = true }
+
 SMODS.Joker {
     key = "bonus",
     unlocked = true,
@@ -199,9 +201,9 @@ SMODS.Joker {
 					repetitions = card.ability.extra.retriggers,
 					card = context.other_card
 				}
-			
 		end
     end
+
 }
 
 
@@ -379,7 +381,7 @@ end
 function alloy_check(self, enhancement)
 
 end ]]
-
+--[[ 
 SMODS.Joker {
     key = "alloy",
 	loc_txt = {
@@ -445,7 +447,7 @@ SMODS.Joker {
         return false
     end
     
-}
+} ]]
 
 SMODS.Joker {
     key = "canvas",
@@ -755,9 +757,147 @@ SMODS.Joker {
 }
 
 
+SMODS.Joker {
+    key = "fourleaf",
+    loc_txt = {
+		name = 'Four-leaf Mirror',
+		text = {
+            "{C:attention}Lucky{} cards are considered {C:attention}Glass{} cards,",
+            "{C:attention}Glass{} cards are considered {C:attention}Lucky{} cards"
+		}
+	},
+    unlocked = true,
+    rarity = 2,
+    cost = 5,
+    atlas = 'JokingAround',
+    pos = { x = 1, y = 1 },
+    pixel_size = { h = 71 },
+    config = { extra = {} },
+    loc_vars = function(self, info_queue, card)
+        return { vars = {card.ability.extra.chips} }
+    end,
+
+    calculate = function(self, card, context)  
+        if context.check_enhancement then
+            if context.other_card.config.center.key == "m_glass" then
+                return {m_lucky = true}
+            end
+            if context.other_card.config.center.key == "m_lucky" then
+                return {m_glass = true}
+            end
+        end
+    end
+}
 
 
+SMODS.Joker {
+    key = "love",
+    loc_txt = {
+		name = 'Love Letter',
+		text = {
+            "All scored cards have {C:green}#1# in #2#{} chance to become {C:hearts}#3#",
+            "if played hand contains a {C:attention}#4#{}",
+		}
+	},
+    unlocked = true,
+    rarity = 1,
+    cost = 3,
+    atlas = 'JokingAround',
+    pos = { x = 1, y = 2 },
+    blueprint_compat = false,
+    config = { extra = {suit = 'Hearts', type = 'Pair', odds = 2} },
+    loc_vars = function(self, info_queue, card)
+        return { vars = {G.GAME.probabilities.normal, card.ability.extra.odds, card.ability.extra.suit, card.ability.extra.type} }
+    end,
+
+    calculate = function(self, card, context)  
+        if context.before and context.main_eval and not context.blueprint and next(context.poker_hands[card.ability.extra.type]) then
+            local procs = 0
+            for _, scored_card in ipairs(context.scoring_hand) do
+                if pseudorandom('joking_date') < G.GAME.probabilities.normal / card.ability.extra.odds and scored_card.base.suit ~= card.ability.extra.suit then
+                    procs = procs + 1
+                    SMODS.change_base(scored_card, card.ability.extra.suit)
+                    G.E_MANAGER:add_event(Event({
+                        func = function()
+                            scored_card:juice_up()
+                            return true
+                        end
+                    }))
+                end
+            end
+            if procs > 0 then
+            return {
+                    message = card.ability.extra.suit,
+                    colour = G.C.RED
+                }
+            end
+        end
+    end
+}
 
 
+--[[ 
+SMODS.Joker {
+    key = "test",
+    loc_txt = {
+		name = 'Extrovert',
+		text = {
+            "Gains +#1# Chips for each Face Card held in hand,",
+            "resets if a face card is played",
+            "{С:inactive}(Currently {C:chips}+#2#{C:inactive})"
+		}
+	},
+    unlocked = true,
+    perishable_compat = false,
+    rarity = 1,
+    cost = 4,
+    atlas = 'JokingAround',
+    pos = { x = 7, y = 2 },
+    config = { extra = {chips = 0, chip_gain = 3} },
+    loc_vars = function(self, info_queue, card)
+        return { vars = {card.ability.extra.chip_gain, card.ability.extra.chips} }
+    end,
 
+    calculate = function(self, card, context)  
+        if context.before and context.main_eval and not context.blueprint then
+            local faces = 0
+            for _, held_card in ipairs(G.hand.cards) do
+                if held_card:is_face() then
+                    faces = faces + 1
+                end
+            end
+            for _, playing_card in ipairs(context.scoring_hand) do
+                if playing_card:is_face() then
+                    card.ability.extra.mult = 0
+                    return {
+                        message = localize('k_reset'),
+                    }       
+                end
+            end
+            card.ability.extra.chips = card.ability.extra.chips + card.ability.extra.chip_gain * faces
+            return {
+                message = localize('k_upgrade_ex'),
+                colour = G.C.CHIPS,
+            }
 
+        end
+--[[         if context.before and context.main_eval and not context.blueprint then
+            local faces = 0
+            for _, held_card in ipairs(G.hand.cards) do
+                if held_card:is_face() then
+                    faces = faces + 1
+                end
+            end
+            if faces == 1 then
+                card.ability.extra.mult = 0
+                    return {
+                        message = localize('k_reset')
+                    }
+            else
+                card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.mult_gain * faces
+                return {
+                    message = localize('k_upgrade_ex'),
+                    colour = G.C.MULT,
+                }
+            end
+        end ]]
