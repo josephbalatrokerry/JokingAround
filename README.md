@@ -13,7 +13,7 @@ That adds 15 new Jokers in total:
 
 (All Jokers are unlocked from the beginning)
 
-(USES QUANTUM ENHANCEMENTS! May not be compatible with other mods)
+(USES QUANTUM ENHANCEMENTS! May cause weird behaviour when combined with other mods)
 
 # Joker Descriptions:
 
