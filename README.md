@@ -2,13 +2,13 @@
 
 # Your average Balatro mod…
 
-That adds 12 new Jokers in total:
+That adds 14 new Jokers in total:
 
 > 4 Rare Jokers
 
 > 5 Common Jokers
 
-> 3 Uncommon Jokers
+> 5 Uncommon Jokers
 
 (All Jokers are unlocked from the beginning)
 
@@ -62,10 +62,17 @@ Fancy counterpart of Riff-Raff which spawns a Wraith card at the end of every An
 
 # Version 1.2.0 (+1 new Jokers)
 # Common
-# Ransom Joker
-A +Chips Joker that gains the arithmetic mean of all cards played's chips
+## Ransom Joker
+A +Chips scaling Joker that gains the arithmetic mean of all cards played's chips.
 
+# Version 1.3.0 (-1 Joker, +2 new Jokers)
+# Uncommon
+# Four-leaf Mirror
+A replacement for Alloy (which was scrapped), makes Lucky and Glass cards count and act as each other.
 
+# Common
+## Love Letter
+1 in 2 chance to turn scored cards to Hearts if played hand contains a Pair (with love from Lusty Joker)
 
 
 
