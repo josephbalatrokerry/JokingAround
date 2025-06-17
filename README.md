@@ -2,7 +2,7 @@
 
 # Your average Balatro mod…
 
-That adds 15 new Jokers in total:
+That adds 16 new Jokers in total:
 
 > 5 Rare Jokers
 
@@ -10,6 +10,7 @@ That adds 15 new Jokers in total:
 
 > 5 Common Jokers
 
+> 1 Legendary Joker
 
 (All Jokers are unlocked from the beginning)
 
@@ -82,6 +83,9 @@ A replacement for Alloy (which was scrapped because it was banal and had lame ar
 ## Comeback
 Gives X4 XMult if you played your last discarded poker hand
 
+# Version 1.5.0 (+1 Joker)
 
+## Pied Piper
+(ft. Silicon Valley) First scored card takes enhancements and chips of other scored cards and destroys them with 1 in 2 chance
 
 ### Made by Temmy1 (real name Jo.Ker, Joe Kerry) with help of my brother (real name Po.Ker, Poe Kerry) and [Balatro's Discord server](https://discord.com/invite/balatro)
