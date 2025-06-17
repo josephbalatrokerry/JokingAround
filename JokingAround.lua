@@ -896,7 +896,7 @@ SMODS.Joker {
     atlas = 'JokingAround',
     pos = { x = 0, y = 3 },
     soul_pos = { x = 1, y = 3 },
-    config = { extra = { odds = 2} },
+    config = { extra = { odds = 3} },
     loc_vars = function(self, info_queue, card)
         return { vars = {G.GAME.probabilities.normal, card.ability.extra.odds} }
     end,
