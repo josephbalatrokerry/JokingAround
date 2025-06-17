@@ -5,6 +5,14 @@ SMODS.Atlas {
 	py = 95
 }
 
+
+SMODS.Atlas {
+	key = "modicon",
+	path = "icon.png",
+	px = 32,
+	py = 32
+}
+
 SMODS.current_mod.optional_features = { quantum_enhancements = true }
 
 SMODS.Joker {
