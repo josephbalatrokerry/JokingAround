@@ -172,8 +172,8 @@ SMODS.Joker {
 		name = 'Snowballing Joker',
 		text = {	
 			"When {C:attention}Blind{} is selected, set Hands to {C:chips}#1#{},",
-			"retrigger all played cards amount of times",
-			"for each Hand lost this way"
+			"retrigger all played cards for each",
+			"Hand lost this way"
 		}
 	},
     blueprint_compat = true,
