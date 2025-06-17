@@ -25,7 +25,7 @@ SMODS.Joker {
     cost = 4,
     pos = { x = 0, y = 0 },
 	atlas = 'JokingAround',
-    config = { extra = { mult = 4, chips = 30 } },
+    config = { extra = { mult = 4, chips = 15 } },
     loc_vars = function(self, info_queue, card)
         info_queue[#info_queue + 1] = G.P_CENTERS.m_bonus
 		info_queue[#info_queue + 1] = G.P_CENTERS.m_mult
@@ -568,7 +568,7 @@ SMODS.Joker {
     eternal_compat = false,
     atlas = 'JokingAround',
     pos = { x = 4, y = 2 },
-    config = { extra = {rounds_left = 3, spectral_odds = 5, planet_odds = 3} },
+    config = { extra = {rounds_left = 3, spectral_odds = 6, planet_odds = 3} },
     loc_vars = function(self, info_queue, card)
         return { vars = { card.ability.extra.rounds_left, (G.GAME.probabilities.normal or 1), card.ability.extra.spectral_odds, card.ability.extra.planet_odds} }
     end,
@@ -708,7 +708,7 @@ SMODS.Joker {
     loc_txt = {
 		name = 'Ransom Joker',
 		text = {
-            "When a hand is played, add {C:attention}arithmetic mean{} of Chips",
+            "When a hand is played, add halved {C:attention}arithmetic mean{} of Chips",
             "of all scored cards to this Joker's Chips",
             "{C:inactive}(Currently {C:blue}+#1#{C:inactive})"
 		}
@@ -716,7 +716,7 @@ SMODS.Joker {
     unlocked = true,
     perishable_compat = false,
     rarity = 1,
-    cost = 5,
+    cost = 6,
     atlas = 'JokingAround',
     pos = { x = 0, y = 2 },
     config = { extra = {chips = 0} },
@@ -730,7 +730,7 @@ SMODS.Joker {
             for _, scored_card in ipairs(context.scoring_hand) do
                 chip_mod = chip_mod + scored_card:get_chip_bonus() 
             end
-            chip_mod = math.ceil(chip_mod / #context.scoring_hand)
+            chip_mod = math.ceil((chip_mod / #context.scoring_hand) / 2)
             card.ability.extra.chips = card.ability.extra.chips + chip_mod
             return {
                 message = localize('k_upgrade_ex'),
@@ -868,6 +868,58 @@ SMODS.Joker {
     end
 }
 
+
+SMODS.Joker {
+    key = "piper",
+    loc_txt = {
+		name = 'Pied Piper',
+		text = {
+            "{C:attention}First{} scored card gains",
+            "{C:attention}Chips{} and {C:attention}Enhancements{}",
+            "of other scored cards, all cards",
+            "aside from the first one have {C:green}#1# in #2#{} chance",
+            "to be destroyed after scoring"
+		}
+	},
+    unlocked = true,
+    blueprint_compat = false,
+    rarity = 4,
+    cost = 20,
+    atlas = 'JokingAround',
+    pos = { x = 0, y = 3 },
+    soul_pos = { x = 1, y = 3 },
+    config = { extra = { odds = 2} },
+    loc_vars = function(self, info_queue, card)
+        return { vars = {G.GAME.probabilities.normal, card.ability.extra.odds} }
+    end,
+
+    calculate = function(self, card, context)  
+        if context.before and context.main_eval and not context.blueprint then
+            local affected_card = context.scoring_hand[1]
+            for _, played_card in ipairs(context.scoring_hand) do
+                if played_card ~= affected_card then
+                    affected_card.ability.perma_bonus = (affected_card.ability.perma_bonus or 0) + played_card:get_chip_bonus() 
+                    if played_card.config.center.key ~= 'c_base' then
+                        affected_card:set_ability(played_card.config.center.key, nil, true)
+                    end
+                end
+            end
+            G.E_MANAGER:add_event(Event({
+                        func = function()
+                            affected_card:juice_up()
+                            return true
+                        end
+                    }))
+        end
+        if pseudorandom('joking_piper') < G.GAME.probabilities.normal / card.ability.extra.odds and context.destroy_card and context.cardarea == G.play and context.destroying_card and context.destroy_card ~= context.scoring_hand[1]
+        then
+            return{
+                remove = true
+            }
+        end
+    end
+}
+
 --[[ 
 SMODS.Joker {
     key = "test",
@@ -933,3 +985,6 @@ SMODS.Joker {
                 }
             end
         end ]]
+
+
+        
