@@ -187,14 +187,14 @@ SMODS.Joker {
     end,
     calculate = function(self, card, context)
         if context.setting_blind and not context.blueprint then
-			card.ability.extra.retriggers = G.GAME.current_round.hands_left - 1
+			card.ability.extra.retriggers = G.GAME.current_round.hands_left - card.ability.extra.hands
             return {
                 func = function()
                     G.E_MANAGER:add_event(Event({
                         func = function()
                             ease_hands_played(-G.GAME.current_round.hands_left + card.ability.extra.hands)
                             SMODS.calculate_effect(
-                                { message = localize { type = 'variable', key = 'a_hands', vars = { card.ability.extra.hands } } },
+                                { message = string.format('-%d Hands', card.ability.extra.retriggers)},
                                 context.blueprint_card or card)
                             return true
                         end
@@ -668,12 +668,12 @@ SMODS.Joker {
     loc_txt = {
 		name = 'Aristocracy',
 		text = {
-			"When {C:attention}Boss Blind{} is defeated, create {C:attention}#1#{C:spectral} Wraith{} card",
+			"When {C:attention}Boss Blind{} is defeated, create {C:spectral}Wraith{}",
             "{C:inactive}(Must have room){}"
 		}
 	},
     unlocked = true,
-    blueprint_compat = false,
+    blueprint_compat = true,
     rarity = 2,
     cost = 8,
     atlas = 'JokingAround',
@@ -684,29 +684,34 @@ SMODS.Joker {
     end,
 
     calculate = function(self, card, context)
-        if context.end_of_round and context.game_over == false and context.main_eval and not context.blueprint then
+        if context.end_of_round and context.game_over == false and context.main_eval then
             if G.GAME.blind.boss and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
-                local wraiths_to_create = math.min(card.ability.extra.wraith_amount, G.consumeables.config.card_limit - (#G.consumeables.cards + G.GAME.consumeable_buffer))
-                G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + wraiths_to_create
-        G.E_MANAGER:add_event(Event({
-                func = function()
-                    for _ = 1, wraiths_to_create do
-                        SMODS.add_card {
-                            set = 'Spectral',
-                            key_append = 'joking_aristocracy',
-                            key = "c_wraith"
-                             -- Optional, useful for checking the source of the creation in `in_pool`.
-                        }
-                        G.GAME.consumeable_buffer = 0
+                G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
+                return {
+                    func = function()
+                        -- This is for retrigger purposes, Jokers need to return something to retrigger
+                        -- You can also do this outside the return and `return nil, true` instead
+                        G.E_MANAGER:add_event(Event({
+                            func = (function()
+                                G.E_MANAGER:add_event(Event({
+                                    func = function()
+                                        SMODS.add_card {
+                                            set = 'Spectral',
+                                            key_append = 'joking_aristocracy',
+                                            key = 'c_wraith'-- Optional, useful for checking the source of the creation in `in_pool`.
+                                        }
+                                        G.GAME.consumeable_buffer = 0
+                                        return true
+                                    end
+                                }))
+                                SMODS.calculate_effect({ message = localize('k_plus_spectral'), colour = G.C.BLUE },
+                                    context.blueprint_card or card)
+                                return true
+                            end)
+                        }))
                     end
-                    return true
-                end
-            }))
-            return {
-                message = string.format('+%d Spectral', wraiths_to_create),
-                colour = G.C.BLUE,
-            }
-        end
+                }
+            end
         end
     end
 }
@@ -802,7 +807,7 @@ SMODS.Joker {
     cost = 3,
     atlas = 'JokingAround',
     pos = { x = 1, y = 2 },
-    blueprint_compat = false,
+    blueprint_compat = true,
     config = { extra = {suit = 'Hearts', type = 'Pair', odds = 2} },
     loc_vars = function(self, info_queue, card)
         return { vars = {G.GAME.probabilities.normal, card.ability.extra.odds, card.ability.extra.suit, card.ability.extra.type} }
@@ -857,7 +862,7 @@ SMODS.Joker {
     end,
 
     calculate = function(self, card, context)  
-        if context.pre_discard and not context.hook then
+        if context.pre_discard and not context.hook and not context.blueprint then
             local text, _ = G.FUNCS.get_poker_hand_info(G.hand.highlighted)
             card.ability.extra.discarded_type = text
             return
@@ -875,6 +880,93 @@ SMODS.Joker {
         end
     end
 }
+
+
+
+SMODS.Joker {
+    key = "conspiracy",
+    loc_txt = {
+		name = 'Conspiracy',
+		text = {
+			"Create a {C:spectral}Spectral{} card per each {C:attention}#1#",
+            "{C:attention}consecutive rerolls{} in {C:money}the shop",
+            "{C:inactive}(Must have space, #2# rerolls left)"
+		}
+	},
+    blueprint_compat = false,
+    rarity = 2,
+    atlas = 'JokingAround',
+    cost = 6,
+    pos = { x = 2, y = 3 },
+    config = { extra = {rerolls = 3, rerolls_left = 3} },
+    loc_vars = function(self, info_queue, card)
+        return { vars = { card.ability.extra.rerolls, card.ability.extra.rerolls_left } }
+    end,
+    calculate = function(self, card, context)
+        
+            if context.reroll_shop then
+                card.ability.extra.rerolls_left = card.ability.extra.rerolls_left - 1
+                if card.ability.extra.rerolls_left == 0 and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
+                    G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
+                    card.ability.extra.rerolls_left = card.ability.extra.rerolls
+                return {
+                func = function()
+                    -- This is for retrigger purposes, Jokers need to return something to retrigger
+                    -- You can also do this outside the return and `return nil, true` instead
+                    G.E_MANAGER:add_event(Event({
+                        func = (function()
+                            G.E_MANAGER:add_event(Event({
+                                func = function()
+                                    SMODS.add_card {
+                                        set = 'Spectral',
+                                        key_append = 'joking_conspiracy' -- Optional, useful for checking the source of the creation in `in_pool`.
+                                    }
+                                    G.GAME.consumeable_buffer = 0
+                                    return true
+                                end
+                            }))
+                            SMODS.calculate_effect({ message = localize('k_plus_spectral'), colour = G.C.BLUE },
+                                context.blueprint_card or card)
+                            return true
+                        end)
+                    }))
+                end
+            }
+            else
+                    if card.ability.extra.rerolls_left == 0 then
+                        card.ability.extra.rerolls_left = card.ability.extra.rerolls
+                    end
+                        return {
+                            message = '...',
+                            colour = G.C.PURPLE
+                        }
+
+            end 
+        end
+    
+        
+
+
+        if context.ending_shop and not context.blueprint and card.ability.extra.rerolls_left ~= card.ability.extra.rerolls then
+            card.ability.extra.rerolls_left = card.ability.extra.rerolls
+            return {
+                    message = localize('k_reset'),
+                    colour = G.C.RED
+                }
+        end
+    end
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 SMODS.Joker {
