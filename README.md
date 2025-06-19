@@ -72,7 +72,7 @@ A +Chips scaling Joker that gains the arithmetic mean of all cards played's chip
 # Version 1.3.0 (-1 Joker, +2 new Jokers)
 # Uncommon
 ## Four-leaf Mirror
-A replacement for Alloy (which was scrapped because it was banal and had lame art), makes Lucky and Glass cards count and act as each other.
+A replacement for Alloy, makes Lucky and Glass cards count and act as each other.
 
 # Common
 ## Love Letter
@@ -80,12 +80,19 @@ A replacement for Alloy (which was scrapped because it was banal and had lame ar
 
 # Version 1.4.0 (+1 Joker)
 
+# Rare
 ## Comeback
 Gives X4 XMult if you played your last discarded poker hand
 
 # Version 1.5.0 (+1 Joker)
-
+# Legendary
 ## Pied Piper
 (ft. Silicon Valley) First scored card takes enhancements and chips of other scored cards and destroys them with 1 in 2 chance
+
+# Version 1.6.0 (+1 Joker)
+# Uncommon
+# Conspiracy
+Gain a random Spectral card for each 3 rerolls made in the same shop.
+
 
 ### Made by Temmy1 (real name Jo.Ker, Joe Kerry) with help of my brother (real name Po.Ker, Poe Kerry) and [Balatro's Discord server](https://discord.com/invite/balatro)
