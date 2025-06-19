@@ -6,7 +6,7 @@ That adds 16 new Jokers in total:
 
 > 5 Rare Jokers
 
-> 5 Uncommon Jokers
+> 6 Uncommon Jokers
 
 > 5 Common Jokers
 
