@@ -1353,7 +1353,7 @@ SMODS.Joker {
 			"{X:mult,C:white}X#1#{} Mult, {C:red}debuff{} all playing cards"
 		}
 	},
-    blueprint_compat = false,
+    blueprint_compat = true,
     atlas = 'JokingAround',
     rarity = 2,
     cost = 7,
