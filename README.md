@@ -16,6 +16,9 @@ That adds 22.5 new Jokers in total:
 > 
 Oh, and there's also one new Deck - Everchanging Deck. I dare you to run Baron + Mime build on it
 
+[Mod's wiki page](https://balatromods.miraheze.org/wiki/Joking_Around)
+
+
 (All Jokers are unlocked from the beginning).
 
 (USES QUANTUM ENHANCEMENTS! May cause weird behaviour when combined with other mods)
@@ -124,6 +127,5 @@ Turns all played cards Bonus or Mult. Like Hiker, but cooler! (Vampire stocks ju
 # Decks
 ## Everchanging Deck
 Randomly changes ranks, suits and enhancements of all cards held in hand at the end of round
-
 
 ### Made by Temmy1 (real name Jo.Ker, Joe Kerry) with help of my brother (real name Po.Ker, Poe Kerry) and [Balatro's Discord server](https://discord.com/invite/balatro)
