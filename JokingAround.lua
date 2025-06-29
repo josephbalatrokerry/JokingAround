@@ -1220,6 +1220,7 @@ SMODS.Joker {
 	},
     blueprint_compat = true,
     rarity = 1,
+	eternal_compat = false,
     atlas = 'JokingAround',
     cost = 10,
     pos = { x = 2, y = 4 },
