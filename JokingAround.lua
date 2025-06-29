@@ -1132,14 +1132,6 @@ SMODS.Back {
 
 
 
-function reset_joking_whetstone_ranks()
-    for _, k in ipairs(G.GAME.current_round.ranks_played) do
-        k = nil
-    end
-end
-
-
-
 function table_contains(tbl, value)
     for _, v in ipairs(tbl) do
         if v == value then
