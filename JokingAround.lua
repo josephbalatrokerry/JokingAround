@@ -89,7 +89,6 @@ function Game:init_game_object()
 	local ret = igo(self)
 	ret.current_round.chisel_card = { suit = 'Spades', rank = 'Ace', id = 14 }
 	ret.current_round.chisel_card_cnt = 0
-    ret.current_round.ranks_played = {}
 	return ret
 end
 
@@ -1130,8 +1129,6 @@ SMODS.Back {
 
 
 
-
-
 function table_contains(tbl, value)
     for _, v in ipairs(tbl) do
         if v == value then
@@ -1212,7 +1209,6 @@ SMODS.Joker {
 	},
     blueprint_compat = true,
     rarity = 1,
-	eternal_compat = false,
     atlas = 'JokingAround',
     cost = 10,
     pos = { x = 2, y = 4 },
@@ -1353,7 +1349,7 @@ SMODS.Joker {
 			"{X:mult,C:white}X#1#{} Mult, {C:red}debuff{} all playing cards"
 		}
 	},
-    blueprint_compat = true,
+    blueprint_compat = false,
     atlas = 'JokingAround',
     rarity = 2,
     cost = 7,
@@ -1385,6 +1381,97 @@ SMODS.Joker {
         end
     end,
 }
+
+
+
+
+
+
+
+
+
+
+SMODS.Joker {
+    key = "mustache",
+    loc_txt = {
+		name = 'Mustached Joker',
+		text = {
+            "Gain {C:money}#1#${} when skipping a blind"
+		}
+
+	},
+    blueprint_compat = true,
+    unlocked = true,
+    rarity = 1,
+    cost = 5,
+    atlas = 'JokingAround',
+    pos = { x = 3, y = 4 },
+    config = { extra = {dollars = 8} },
+    loc_vars = function(self, info_queue, card)
+        return { vars = {card.ability.extra.dollars} }
+    end,
+
+    calculate = function(self, card, context)  
+        if context.skip_blind and context.main_eval then 
+            return {
+                dollars = card.ability.extra.dollars,
+                func = function() -- This is for timing purposes, it runs after the dollar manipulation
+                    G.E_MANAGER:add_event(Event({
+                        func = function()
+                            G.GAME.dollar_buffer = 0
+                            return true
+                        end
+                    }))
+                end
+            }
+        end
+    end
+}
+
+
+
+
+
+
+
+SMODS.Joker {
+    key = "bill",
+    loc_txt = {
+		name = 'Dollar Bill',
+		text = {
+            "Earn {C:money}$#1#{} for each {C:attention}#2#{} cards with {C:clubs}#3#{} suit",
+            "in your {C:attention}full deck{} at end of round",
+            "{C:inactive}(Currently {C:money}$#4#{C:inactive})"
+		}
+
+	},
+    blueprint_compat = false,
+    unlocked = true,
+    rarity = 2,
+    cost = 7,
+    atlas = 'JokingAround',
+    pos = { x = 4, y = 4 },
+    config = { extra = {dollars = 1, suit = 'Clubs', for_each = 3} },
+    loc_vars = function(self, info_queue, card)
+        local club_tally = 0
+        if G.playing_cards then
+            for _, playing_card in ipairs(G.playing_cards) do
+                if playing_card.base.suit == card.ability.extra.suit then club_tally = club_tally + 1 end
+            end
+        end
+        local total_money = math.floor((club_tally * card.ability.extra.dollars) / card.ability.extra.for_each)
+        return { vars = {card.ability.extra.dollars, card.ability.extra.for_each, localize(card.ability.extra.suit, 'suits_singular'), total_money } }
+    end,
+
+    calc_dollar_bonus = function(self, card)
+        local club_tally = 0
+        for _, playing_card in ipairs(G.playing_cards) do
+            if playing_card.base.suit == card.ability.extra.suit then club_tally = club_tally + 1 end
+        end
+        return club_tally > 0 and math.floor((club_tally * card.ability.extra.dollars) / card.ability.extra.for_each) or nil
+    end
+}
+
 
 
 
