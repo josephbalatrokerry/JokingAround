@@ -1476,6 +1476,63 @@ SMODS.Joker {
 
 
 
+SMODS.Joker {
+    key = "tie",
+    loc_txt = {
+		name = 'Long Necktie',
+		text = {
+            "If played hand contains a {C:attention}Straight{}, this Joker gains",
+            "{C:mult}+#1#{} Mult for each scored Rank it shares",
+            "with previous {C:attention}Straight",
+            "{C:inactive}(Currently {C:mult}+#2# {C:inactive}Mult, previously scored ranks",
+            "{C:inactive}are #3#, #4#, #5#, #6#, #7#)"
+		}
+
+	},
+    blueprint_compat = true,
+    unlocked = true,
+    rarity = 2,
+    cost = 6,
+    atlas = 'JokingAround',
+    pos = { x = 0, y = 5 },
+    config = { extra = {mult = 0, mult_gain = 1, previous_straight = {'None', 'None', 'None', 'None', 'None'}} },
+    loc_vars = function(self, info_queue, card)
+        return { vars = { card.ability.extra.mult_gain, card.ability.extra.mult, 
+        card.ability.extra.previous_straight[1], card.ability.extra.previous_straight[2],  card.ability.extra.previous_straight[3], 
+        card.ability.extra.previous_straight[4], card.ability.extra.previous_straight[5],} }
+    end,
+
+    calculate = function(self, card, context)  
+        if context.before and context.main_eval and not context.blueprint and next(context.poker_hands['Straight']) then
+            local share_tally = 0
+            for ind, scored_card in ipairs(context.scoring_hand) do
+                for _, past_scored_rank in ipairs(card.ability.extra.previous_straight) do
+                    if scored_card.base.value == past_scored_rank then
+                        share_tally = share_tally + 1
+                    end
+                end
+                card.ability.extra.previous_straight[ind] = context.scoring_hand[ind].base.value
+            end
+            if share_tally > 0 then
+                card.ability.extra.mult = card.ability.extra.mult + share_tally * card.ability.extra.mult_gain
+                return {
+                    message = localize('k_upgrade_ex'),
+                    colour = G.C.RED
+                }
+            end
+        end
+        if context.joker_main then
+            return
+            {
+                mult = card.ability.extra.mult
+            }
+        end
+    end
+
+}
+
+
+
 
 SMODS.Joker {
     key = "piper",
