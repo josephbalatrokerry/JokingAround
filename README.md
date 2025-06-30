@@ -6,9 +6,9 @@ That adds 22.5 new Jokers in total:
 
 > 6 Rare Jokers
 
-> 8 Uncommon Jokers
+> 9 Uncommon Jokers
 
-> 7 Common Jokers
+> 8 Common Jokers
 
 > 1 Legendary Joker
 
