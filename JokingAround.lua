@@ -1474,18 +1474,16 @@ SMODS.Joker {
 
 
 
-
-
 SMODS.Joker {
     key = "tie",
     loc_txt = {
 		name = 'Long Necktie',
 		text = {
             "If played hand contains a {C:attention}Straight{}, this Joker gains",
-            "{C:mult}+#1#{} Mult for each scored Rank it shares",
+            "{C:mult}+#1#{} Mult for each scored rank it shares",
             "with previous {C:attention}Straight",
-            "{C:inactive}(Currently {C:mult}+#2# {C:inactive}Mult, previously scored ranks",
-            "{C:inactive}are #3#, #4#, #5#, #6#, #7#)"
+            "{C:inactive}(Currently {C:mult}+#2# {C:inactive}Mult, previous Straight",
+            "{C:inactive}consisted of #3#, #4#, #5#, #6#, #7#)"
 		}
 
 	},
@@ -1505,13 +1503,17 @@ SMODS.Joker {
     calculate = function(self, card, context)  
         if context.before and context.main_eval and not context.blueprint and next(context.poker_hands['Straight']) then
             local share_tally = 0
+            local accum = {'None', 'None', 'None', 'None', 'None'}
             for ind, scored_card in ipairs(context.scoring_hand) do
                 for _, past_scored_rank in ipairs(card.ability.extra.previous_straight) do
                     if scored_card.base.value == past_scored_rank then
                         share_tally = share_tally + 1
                     end
                 end
-                card.ability.extra.previous_straight[ind] = context.scoring_hand[ind].base.value
+                accum[ind] = context.scoring_hand[ind].base.value
+            end
+            for ind, rank in ipairs(accum) do
+                card.ability.extra.previous_straight[ind] = accum[ind]
             end
             if share_tally > 0 then
                 card.ability.extra.mult = card.ability.extra.mult + share_tally * card.ability.extra.mult_gain
@@ -1530,6 +1532,9 @@ SMODS.Joker {
     end
 
 }
+
+
+
 
 
 
@@ -1620,4 +1625,10 @@ SMODS.Joker {
 function SMODS.current_mod.reset_game_globals(run_start)
     reset_joking_whetstone_ranks()    
 end ]]
+
+
+
+
+
+
 
