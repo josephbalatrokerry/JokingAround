@@ -1488,6 +1488,7 @@ SMODS.Joker {
 
 	},
     blueprint_compat = true,
+    perishable_compat = false,
     unlocked = true,
     rarity = 2,
     cost = 6,
@@ -1534,10 +1535,273 @@ SMODS.Joker {
 }
 
 
+SMODS.Joker {
+    key = "credits",
+    loc_txt = {
+		name = 'Roll the Credits',
+		text = {
+            "Each played card gives {X:mult,C:white}X#1#{} Mult",
+            "on {C:attention}final hand{} of round"
+        }
+
+	},
+    blueprint_compat = true,
+    unlocked = true,
+    rarity = 3,
+    cost = 8,
+    atlas = 'JokingAround',
+    pos = { x = 1, y = 5 },
+    config = { extra = { xmult = 1.5 } },
+    loc_vars = function(self, info_queue, card)
+        return { vars = { card.ability.extra.xmult } }
+    end,
+
+    calculate = function(self, card, context)  
+        if context.individual and context.cardarea == G.play and G.GAME.current_round.hands_left == 0 then
+            return
+            {
+                xmult = card.ability.extra.xmult
+            }
+        end
+    end
+
+}
+
+SMODS.Joker {
+    key = "earth",
+    loc_txt = {
+		name = 'Earthquake',
+		text = {
+            "Each {C:attention}Stone{} card held in hand",
+            "gives {C:chips}+#1#{} Chips"
+        }
+
+	},
+    blueprint_compat = true,
+    unlocked = true,
+    rarity = 1,
+    cost = 5,
+    atlas = 'JokingAround',
+    pos = { x = 3, y = 5 },
+    config = { extra = { chips = 50 } },
+    loc_vars = function(self, info_queue, card)
+        return { vars = { card.ability.extra.chips } }
+    end,
+
+    calculate = function(self, card, context)  
+        if context.individual and context.cardarea == G.hand and not context.end_of_round and SMODS.has_enhancement(context.other_card, 'm_stone') then
+            if context.other_card.debuff then
+                return {
+                    message = localize('k_debuffed'),
+                    colour = G.C.RED
+                }
+            else
+                return {
+                    chips = card.ability.extra.chips
+                }
+            end
+        end
+    end
+
+}
 
 
 
 
+
+
+
+
+
+SMODS.Joker {
+    key = "prayer",
+    loc_txt = {
+		name = 'Prayer Card',
+		text = {
+            "{C:green}#1# in amount of hands left{} chance to",
+            "create a {C:tarot}Tarot{} card when a hand is played",
+            "{C:inactive}(Currently {C:green}1 in #2#{C:inactive})"
+        }
+
+	},
+    blueprint_compat = true,
+    unlocked = true,
+    rarity = 2,
+    cost = 6,
+    atlas = 'JokingAround',
+    pos = { x = 2, y = 5 },
+    config = { extra = { } },
+    loc_vars = function(self, info_queue, card)
+        return { vars = { G.GAME.probabilities.normal, G.GAME.current_round.hands_left + 1} }
+    end,
+
+    calculate = function(self, card, context)  
+        if context.joker_main and
+            #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit and 
+             pseudorandom('joking_prayer') < G.GAME.probabilities.normal / (G.GAME.current_round.hands_left + 1)
+             then -- See note about Talisman compatibility at the bottom
+                G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
+                G.E_MANAGER:add_event(Event({
+                    func = (function()
+                        SMODS.add_card {
+                            set = 'Tarot',
+                            key_append = 'joking_prayer' -- Optional, useful for checking the source of the creation in `in_pool`.
+                        }
+                        G.GAME.consumeable_buffer = 0
+                        return true
+                    end)
+                }))
+                return {
+                    message = localize('k_plus_tarot'),
+                }
+        end
+    end
+
+}
+
+
+
+
+
+
+SMODS.Joker {
+    key = "dead",
+    loc_txt = {
+		name = 'Dead End',
+		text = {
+            "Allows {C:attention}Straights{} to be made with",
+            "one gap in the middle of any size",
+            "{C:inactive}(ex: {C:attention}2 3 4 9 10{C:inactive})"
+        }
+
+	},
+    blueprint_compat = false,
+    unlocked = true,
+    rarity = 2,
+    cost = 7,
+    atlas = 'JokingAround',
+    pos = { x = 4, y = 5 },
+    config = { extra = { } },
+}
+
+
+
+
+local get_straight_ref = get_straight
+
+function get_straight(hand)
+    --checking if the joker is even there
+    if not next(SMODS.find_card("j_joking_dead")) then
+        return get_straight_ref(hand)
+    end
+
+    local ret = {}
+	local four_fingers = next(SMODS.find_card('j_four_fingers'))
+	local can_skip = next(SMODS.find_card('j_shortcut'))
+    --checking if the length is valid
+
+	if #hand < (5 - (four_fingers and 1 or 0)) then return ret end
+	local t = {}
+	local RANKS = {}
+
+	for i = 1, #hand do
+		if hand[i]:get_id() > 0 then
+			local rank = hand[i]:get_id()
+			table.insert(RANKS, rank)
+		end
+	end
+    table.sort(RANKS)
+
+    local break_amount = 0
+
+    for i = 1, #RANKS - 1 do
+        if not (RANKS[i] == RANKS[i + 1] - 1) then
+            if not(RANKS[i + 1] - RANKS[i] == 2 and can_skip) then
+                if i == 2 or i == 3 then
+                    if break_amount > 0 then
+                        return get_straight_ref(hand)
+                    else
+                    break_amount = break_amount + 1
+                    end
+                end
+
+            end
+        end
+
+    end
+    for _, card in ipairs(hand) do
+        table.insert(t, card)
+    end
+    table.insert(ret, t)
+    return ret
+end
+
+
+--[[ 
+
+SMODS.Joker {
+    key = "election",
+    loc_txt = {
+		name = 'Election',
+		text = {
+            "+#1# Mult, +#2#, Chips"
+		}
+
+	},
+    blueprint_compat = false,
+    unlocked = true,
+    rarity = 1,
+    cost = 5,
+    --atlas = 'JokingAround',
+    pos = { x = 0, y = 0 },
+    config = { extra = { mult = 0, chips = 0, mult_gain = 1, chip_gain = 3, suit_1 = 'Spades', suit_2 = 'Hearts'} },
+    loc_vars = function(self, info_queue, card)
+        return { vars = {card.ability.extra.mult, card.ability.extra.chips } }
+    end,
+    calculate = function(self, card, context)  
+        if context.individual and context.cardarea == G.play and not context.blueprint then
+            if context.other_card:is_suit(card.ability.extra.suit_1) then
+                card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.mult_gain
+                return {
+                message = localize('k_upgrade_ex'),
+                colour = G.C.MULT,
+                }
+            end
+            if context.other_card:is_suit(card.ability.extra.suit_2) then
+                card.ability.extra.chips = card.ability.extra.chips + card.ability.extra.chip_gain
+                return {
+                    message = localize('k_upgrade_ex'),
+                    colour = G.C.CHIPS,
+                }
+            end
+        end
+        if context.joker_main then 
+            return
+            {
+                mult = card.ability.extra.mult,
+                chips = card.ability.extra.chips
+            }
+        end
+        if context.end_of_round and context.main_eval then
+            local base_mult = card.ability.extra.mult / card.ability.extra.mult_gain
+            local base_chips = card.ability.extra.chips / card.ability.extra.chip_gain
+            local balanced = math.ceil(base_mult + base_chips / 2) 
+            card.ability.extra.mult = balanced * card.ability.extra.mult_gain
+            card.ability.extra.chips = balanced * card.ability.extra.chip_gain
+            return
+            {
+                message = 'Balanced!'
+            }
+
+        end
+
+    end
+
+}
+
+
+
+ ]]
 
 SMODS.Joker {
     key = "piper",
