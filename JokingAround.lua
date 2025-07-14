@@ -108,16 +108,6 @@ end
 
 
 
---[[ 
-
-local score_ref = Card.score
-function Card:score()
-    print('test')
-   local ret = score_ref(self)
-   table.insert(G.GAME.current_round.ranks_played, self:get_id())
-   return ret 
-end
- ]]
 
 
 
@@ -267,7 +257,7 @@ SMODS.Joker {
         return { vars = { card.ability.extra.xmult_gain, card.ability.extra.xmult } }
     end,
     calculate = function(self, card, context)
-        if context.buying_card and context.card.ability.set == 'Joker' and not context.blueprint then
+        if context.buying_card and context.card.ability.set == 'Joker' and not context.card == card and not context.blueprint then
             card.ability.extra.xmult = card.ability.extra.xmult + card.ability.extra.xmult_gain
             return {
                 message = localize('k_upgrade_ex')
@@ -1146,7 +1136,7 @@ SMODS.Joker {
 		name = 'Whetstone',
 		text = {
 			"Gives {X:mult,C:white}X#1#{} Mult when a card is played if",
-            "it's rank was played in a previous hand this round"
+            "it's rank was scored in a previous hand this round"
 		}
 	},
 
@@ -1601,6 +1591,14 @@ SMODS.Joker {
                 }
             end
         end
+    end,
+    in_pool = function(self, args) 
+        for _, playing_card in ipairs(G.playing_cards or {}) do
+            if SMODS.has_enhancement(playing_card, 'm_stone') then
+                return true
+            end
+        end
+        return false
     end
 
 }
@@ -1737,6 +1735,18 @@ function get_straight(hand)
 end
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 --[[ 
 
 SMODS.Joker {
@@ -1804,6 +1814,50 @@ SMODS.Joker {
  ]]
 
 SMODS.Joker {
+    key = "pareidcolia",
+    unlocked = true,
+	loc_txt = {
+		name = 'Pareidcolia',
+		text = {
+			"Selling an {C:green}uncommon{} Joker has",
+            "{C:green}#1# in #2#{} chance to create a {C:attention}Double Tag"
+		}
+	},
+    perishable_compat_compat = false,
+    blueprint_compat = true,
+    rarity = 3,
+	atlas = 'JokingAround',
+    cost = 8,
+    pos = { x = 0, y = 6},
+    config = { extra = { odds = 3 } },
+    loc_vars = function(self, info_queue, card)
+        info_queue[#info_queue + 1] = { key = 'tag_double', set = 'Tag' }
+        return { vars = { G.GAME.probabilities.normal, card.ability.extra.odds } }
+    end,
+    calculate = function(self, card, context)
+        if context.selling_card and context.card.ability.set == 'Joker'and pseudorandom('joking_pareidcolia') < G.GAME.probabilities.normal / card.ability.extra.odds then
+            if context.card.config.center.rarity == 2 then
+                return {
+                func = function()
+                    G.E_MANAGER:add_event(Event({
+                        func = (function()
+                            add_tag(Tag('tag_double'))
+                            play_sound('generic1', 0.9 + math.random() * 0.1, 0.8)
+                            play_sound('holo1', 1.2 + math.random() * 0.1, 0.4)
+                            return true
+                        end)
+                    }))
+                end
+                }
+            end
+        end
+    end
+
+}
+
+
+
+SMODS.Joker {
     key = "piper",
     loc_txt = {
 		name = 'Pied Piper',
@@ -1856,8 +1910,6 @@ SMODS.Joker {
 
 
 
-
-
 SMODS.Joker {
     key = "smiley",
     loc_txt = {
@@ -1884,15 +1936,4 @@ SMODS.Joker {
         return false
     end
 
-}--[[ 
-
-function SMODS.current_mod.reset_game_globals(run_start)
-    reset_joking_whetstone_ranks()    
-end ]]
-
-
-
-
-
-
-
+}
