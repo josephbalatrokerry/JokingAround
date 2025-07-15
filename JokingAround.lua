@@ -257,7 +257,7 @@ SMODS.Joker {
         return { vars = { card.ability.extra.xmult_gain, card.ability.extra.xmult } }
     end,
     calculate = function(self, card, context)
-        if context.buying_card and context.card.ability.set == 'Joker' and not context.card == card and not context.blueprint then
+        if context.buying_card and context.card.ability.set == 'Joker' and not (context.card == card) and not context.blueprint then
             card.ability.extra.xmult = card.ability.extra.xmult + card.ability.extra.xmult_gain
             return {
                 message = localize('k_upgrade_ex')
