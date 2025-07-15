@@ -24,7 +24,7 @@ SMODS.current_mod.optional_features = { quantum_enhancements = true }
 
 SMODS.Joker {
     key = "bonus",
-    unlocked = true,
+    ,
 	loc_txt = {
 		name = 'Bonus Joker',
 		text = {
@@ -130,7 +130,7 @@ SMODS.Joker {
 		}
 	},
     perishable_compat = false,
-    unlocked = true,
+    ,
 	atlas = 'JokingAround',
     blueprint_compat = true,
     rarity = 3,
@@ -186,7 +186,7 @@ end
 
 SMODS.Joker {
     key = "snowballing",
-    unlocked = true,
+    ,
 	loc_txt = {
 		name = 'Snowballing Joker',
 		text = {	
@@ -237,7 +237,7 @@ SMODS.Joker {
 
 SMODS.Joker {
     key = "shopaholism",
-    unlocked = true,
+    ,
 	loc_txt = {
 		name = 'Shopaholism',
 		text = {
@@ -263,7 +263,7 @@ SMODS.Joker {
                 message = localize('k_upgrade_ex')
             }
         end
-        if context.selling_card and context.card.ability.set == 'Joker' and card.ability.extra.xmult > 1 and not context.blueprint then
+        if context.selling_card and context.card.ability.set == 'Joker' and not (context.card == card) and card.ability.extra.xmult > 1 and not context.blueprint then
                 card.ability.extra.xmult = 1
                 return {
                     message = localize('k_reset'),
@@ -281,7 +281,7 @@ SMODS.Joker {
 
 SMODS.Joker {
     key = "dystopia",
-    unlocked = true,
+    ,
 	loc_txt = {
 		name = 'Dystopia',
 		text = {
@@ -329,7 +329,7 @@ SMODS.Joker {
 			"{C:inactive}(Currently {C:mult}+#2#{C:inactive} Mult)"
 		}
 	},
-    unlocked = true,
+    ,
     blueprint_compat = true,
     rarity = 1,
 	atlas = 'JokingAround',
@@ -369,7 +369,7 @@ SMODS.Joker {
 		}
 	},
     perishable_compat = false,
-    unlocked = true,
+    ,
     blueprint_compat = true,
     rarity = 1,
 	atlas = 'JokingAround',
@@ -407,7 +407,7 @@ SMODS.Joker {
 			"{C:attention}Gold Cards{} held in hand give {X:mult,C:white}X#2#{} Mult"
 		}
 	},
-    unlocked = true,
+    ,
     blueprint_compat = false,
     rarity = 2,
 	atlas = 'JokingAround',
@@ -467,7 +467,7 @@ SMODS.Joker {
 
 SMODS.Joker {
     key = "canvas",
-    unlocked = true,
+    ,
 	loc_txt = {
 		name = 'Canvas',
 		text = {
@@ -504,7 +504,7 @@ end
 
 SMODS.Joker {
     key = "consolidation",
-    unlocked = true,
+    ,
 	loc_txt = {
 		name = 'Consolidation',
 		text = {
@@ -588,7 +588,7 @@ SMODS.Joker {
             "{s:0.8}If neither trigger, create a {C:tarot,s:0.8}Tarot{s:0.8} card"
 		}
 	},
-    unlocked = true,
+    ,
     blueprint_compat = false,
     rarity = 2,
     cost = 8,
@@ -691,7 +691,7 @@ SMODS.Joker {
             "{C:inactive}(Must have room){}"
 		}
 	},
-    unlocked = true,
+    ,
     blueprint_compat = true,
     rarity = 2,
     cost = 8,
@@ -745,7 +745,7 @@ SMODS.Joker {
             "{C:inactive}(Currently {C:blue}+#1#{C:inactive} Chips, can gain maximum #2# Chips per hand)"
 		}
 	},
-    unlocked = true,
+    ,
     perishable_compat = false,
     rarity = 1,
     cost = 6,
@@ -788,7 +788,7 @@ SMODS.Joker {
 		}
 	},
     blueprint_compat = false,
-    unlocked = true,
+    ,
     rarity = 2,
     cost = 5,
     atlas = 'JokingAround',
@@ -821,7 +821,7 @@ SMODS.Joker {
             "if played hand contains a {C:attention}#4#{}",
 		}
 	},
-    unlocked = true,
+    ,
     rarity = 1,
     cost = 3,
     atlas = 'JokingAround',
@@ -870,7 +870,7 @@ SMODS.Joker {
 
 	},
     blueprint_compat = true,
-    unlocked = true,
+    ,
     rarity = 3,
     cost = 7,
     atlas = 'JokingAround',
@@ -997,7 +997,7 @@ SMODS.Joker {
             "{С:inactive}(Currently {C:chips}+#2#{C:inactive})"
 		}
 	},
-    unlocked = true,
+    ,
     perishable_compat = false,
     rarity = 1,
     cost = 4,
@@ -1064,7 +1064,7 @@ SMODS.Back {
     key = "everchanging",
     pos = { x = 0, y = 0 },
     config = { extra = { hand_size = 1} },
-    unlocked = true,
+    ,
     loc_txt = {
         name = "Everchanging Deck",
         text ={
@@ -1391,7 +1391,7 @@ SMODS.Joker {
 
 	},
     blueprint_compat = true,
-    unlocked = true,
+    ,
     rarity = 1,
     cost = 5,
     atlas = 'JokingAround',
@@ -1436,7 +1436,7 @@ SMODS.Joker {
 
 	},
     blueprint_compat = false,
-    unlocked = true,
+    ,
     rarity = 2,
     cost = 7,
     atlas = 'JokingAround',
@@ -1479,7 +1479,7 @@ SMODS.Joker {
 	},
     blueprint_compat = true,
     perishable_compat = false,
-    unlocked = true,
+    ,
     rarity = 2,
     cost = 6,
     atlas = 'JokingAround',
@@ -1536,7 +1536,7 @@ SMODS.Joker {
 
 	},
     blueprint_compat = true,
-    unlocked = true,
+    ,
     rarity = 3,
     cost = 8,
     atlas = 'JokingAround',
@@ -1568,7 +1568,7 @@ SMODS.Joker {
 
 	},
     blueprint_compat = true,
-    unlocked = true,
+    ,
     rarity = 1,
     cost = 5,
     atlas = 'JokingAround',
@@ -1623,7 +1623,7 @@ SMODS.Joker {
 
 	},
     blueprint_compat = true,
-    unlocked = true,
+    ,
     rarity = 2,
     cost = 6,
     atlas = 'JokingAround',
@@ -1674,7 +1674,7 @@ SMODS.Joker {
 
 	},
     blueprint_compat = false,
-    unlocked = true,
+    ,
     rarity = 2,
     cost = 7,
     atlas = 'JokingAround',
@@ -1759,7 +1759,7 @@ SMODS.Joker {
 
 	},
     blueprint_compat = false,
-    unlocked = true,
+    ,
     rarity = 1,
     cost = 5,
     --atlas = 'JokingAround',
@@ -1815,7 +1815,7 @@ SMODS.Joker {
 
 SMODS.Joker {
     key = "pareidcolia",
-    unlocked = true,
+    ,
 	loc_txt = {
 		name = 'Pareidcolia',
 		text = {
@@ -1869,7 +1869,7 @@ SMODS.Joker {
             "to be destroyed after scoring"
 		}
 	},
-    unlocked = true,
+    ,
     blueprint_compat = false,
     rarity = 4,
     cost = 20,
