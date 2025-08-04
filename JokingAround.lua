@@ -1956,7 +1956,7 @@ SMODS.Joker {
             card.ability.extra.xmult = card.ability.extra.xmult - card.ability.extra.xmult_gain
             card.ability.extra.xmult = math.max(1, card.ability.extra.xmult)
             return
-            {message = 'FUUUCK'}
+            {message = '-0.2'}
         end
 
         if context.joker_main then
