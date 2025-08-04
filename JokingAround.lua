@@ -89,6 +89,7 @@ function Game:init_game_object()
 	local ret = igo(self)
 	ret.current_round.chisel_card = { suit = 'Spades', rank = 'Ace', id = 14 }
 	ret.current_round.chisel_card_cnt = 0
+    ret.current_round.joking_book_hand = 'High Card'
 	return ret
 end
 
@@ -361,7 +362,7 @@ SMODS.Joker {
 SMODS.Joker {
     key = "income",
 	loc_txt = {
-		name = 'Income Report',
+		name = 'Income Statement',
 		text = {
 			"This Joker gains {C:mult}+#1#{} Mult at the end of", 
             "the shop if you have exactly {C:money}#2#${}",
@@ -592,7 +593,7 @@ SMODS.Joker {
     unlocked = true,
     blueprint_compat = false,
     rarity = 2,
-    cost = 8,
+    cost = 6,
     eternal_compat = false,
     atlas = 'JokingAround',
     pos = { x = 4, y = 2 },
@@ -1392,17 +1393,17 @@ SMODS.Joker {
     loc_txt = {
 		name = 'Mustached Joker',
 		text = {
-            "Gain {C:money}#1#${} when skipping a blind"
+            "Gain {C:money}$#1#{} when skipping a blind"
 		}
 
 	},
     blueprint_compat = true,
     unlocked = true,
     rarity = 1,
-    cost = 5,
+    cost = 4,
     atlas = 'JokingAround',
     pos = { x = 3, y = 4 },
-    config = { extra = {dollars = 8} },
+    config = { extra = {dollars = 12} },
     loc_vars = function(self, info_queue, card)
         return { vars = {card.ability.extra.dollars} }
     end,
@@ -1727,7 +1728,10 @@ function get_straight(hand)
                     else
                     break_amount = break_amount + 1
                     end
+                else
+                    return get_straight_ref(hand)
                 end
+
 
             end
         end
@@ -1825,7 +1829,7 @@ SMODS.Joker {
 	loc_txt = {
 		name = 'Pareidcolia',
 		text = {
-			"Selling an {C:green}uncommon{} Joker has",
+			"Selling an {C:green}Uncommon{} Joker has",
             "{C:green}#1# in #2#{} chance to create a {C:attention}Double Tag"
 		}
 	},
@@ -1913,6 +1917,74 @@ SMODS.Joker {
         end
     end
 }
+
+
+SMODS.Joker {
+    key = "book",
+    unlocked = true,
+	loc_txt = {
+		name = 'By the Book',
+		text = {
+			"{X:mult,C:white}+X#1# {} Mult",
+            "if {C:attention}poker hand{} is a {C:attention}#2#",
+            "{X:mult,C:white}-X#1# {} Mult",
+            "if {C:attention}poker hand{} is not a {C:attention}#2#",
+            "hand changes at the end of round",
+            "{C:inactive}(Currently {X:mult,C:white}X#3#{C:inactive} Mult)" 
+		}
+	},
+    perishable_compat_compat = false,
+    blueprint_compat = true,
+    rarity = 3,
+	atlas = 'JokingAround',
+    cost = 9,
+    pos = { x = 1, y = 6},
+    config = { extra = { xmult = 1, xmult_gain = 0.2, poker_hand = "High Card" } },
+    loc_vars = function(self, info_queue, card)
+        return { vars = { card.ability.extra.xmult_gain, G.GAME.current_round.joking_book_hand, card.ability.extra.xmult } }
+    end,
+    calculate = function(self, card, context)
+        if context.before and context.main_eval and not context.blueprint and context.scoring_name == G.GAME.current_round.joking_book_hand then
+            card.ability.extra.xmult = card.ability.extra.xmult + card.ability.extra.xmult_gain
+            return {
+                message = localize('k_upgrade_ex'),
+                colour = G.C.MULT,
+            }
+        end
+
+        if context.scoring_name ~= G.GAME.current_round.joking_book_hand and context.before and context.main_eval then
+            card.ability.extra.xmult = card.ability.extra.xmult - card.ability.extra.xmult_gain
+            card.ability.extra.xmult = math.max(1, card.ability.extra.xmult)
+            return
+            {message = 'FUUUCK'}
+        end
+
+        if context.joker_main then
+        return
+        {
+            xmult = card.ability.extra.xmult
+        }
+        end
+    end
+
+}
+
+
+local function reset_joking_book_hand()
+    local _poker_hands = {}
+    for k, v in pairs(G.GAME.hands) do
+    if v.visible and k ~= G.GAME.current_round.joking_book_hand then
+        _poker_hands[#_poker_hands + 1] = k
+        end
+    end
+    G.GAME.current_round.joking_book_hand = pseudorandom_element(_poker_hands, pseudoseed('vremade_to_do'))
+end
+
+function SMODS.current_mod.reset_game_globals(run_start)
+    reset_joking_book_hand()
+end
+
+
 
 
 
