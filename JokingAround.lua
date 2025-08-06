@@ -20,7 +20,7 @@ SMODS.Atlas {
 	py = 32
 }
 
-SMODS.current_mod.optional_features = { quantum_enhancements = true }
+SMODS.current_mod.optional_features = { quantum_enhancements = true, retrigger_joker = true }
 
 SMODS.Joker {
     key = "bonus",
@@ -1868,55 +1868,40 @@ SMODS.Joker {
 
 
 SMODS.Joker {
-    key = "piper",
+    key = "com",
     loc_txt = {
-		name = 'Pied Piper',
+		name = 'Communist',
 		text = {
-            "{C:attention}First{} scored card gains",
-            "{C:attention}Chips{} and {C:attention}Enhancements{}",
-            "of other scored cards, all cards",
-            "aside from the first one have {C:green}#1# in #2#{} chance",
-            "to be destroyed after scoring"
+            "Retrigger all {C:chips}Common{} Jokers"
 		}
+
 	},
+    blueprint_compat = true,
     unlocked = true,
-    blueprint_compat = false,
-    rarity = 4,
-    cost = 20,
+    rarity = 3,
+    cost = 8,
     atlas = 'JokingAround',
-    pos = { x = 0, y = 3 },
-    soul_pos = { x = 1, y = 3 },
-    config = { extra = { odds = 3} },
+    pos = { x = 2, y = 6 },
+    config = { extra = {} },
     loc_vars = function(self, info_queue, card)
-        return { vars = {G.GAME.probabilities.normal, card.ability.extra.odds} }
+        return { vars = {} }
     end,
 
     calculate = function(self, card, context)  
-        if context.before and context.main_eval and not context.blueprint then
-            local affected_card = context.scoring_hand[1]
-            for _, played_card in ipairs(context.scoring_hand) do
-                if played_card ~= affected_card then
-                    affected_card.ability.perma_bonus = (affected_card.ability.perma_bonus or 0) + played_card:get_chip_bonus() 
-                    if played_card.config.center.key ~= 'c_base' then
-                        affected_card:set_ability(played_card.config.center.key, nil, true)
-                    end
-                end
-            end
-            G.E_MANAGER:add_event(Event({
-                        func = function()
-                            affected_card:juice_up()
-                            return true
-                        end
-                    }))
-        end
-        if pseudorandom('joking_piper') < G.GAME.probabilities.normal / card.ability.extra.odds and context.destroy_card and context.cardarea == G.play and context.destroying_card and context.destroy_card ~= context.scoring_hand[1]
-        then
-            return{
-                remove = true
-            }
-        end
+        if context.retrigger_joker_check and not context.retrigger_joker and context.other_card ~= self then
+			if context.other_card.config.center.rarity == 1 or context.other_card.config.center.rarity == "Common" then
+				return {
+					message = localize("k_again_ex"),
+                    repetitions = 1,
+					card = card,
+				}
+			else
+				return nil, true
+			end
+		end
     end
 }
+
 
 
 SMODS.Joker {
@@ -1967,6 +1952,61 @@ SMODS.Joker {
         end
     end
 
+}
+
+
+
+
+
+SMODS.Joker {
+    key = "piper",
+    loc_txt = {
+		name = 'Pied Piper',
+		text = {
+            "{C:attention}First{} scored card gains",
+            "{C:attention}Chips{} and {C:attention}Enhancements{}",
+            "of other scored cards, all cards",
+            "aside from the first one have {C:green}#1# in #2#{} chance",
+            "to be destroyed after scoring"
+		}
+	},
+    unlocked = true,
+    blueprint_compat = false,
+    rarity = 4,
+    cost = 20,
+    atlas = 'JokingAround',
+    pos = { x = 0, y = 3 },
+    soul_pos = { x = 1, y = 3 },
+    config = { extra = { odds = 3} },
+    loc_vars = function(self, info_queue, card)
+        return { vars = {G.GAME.probabilities.normal, card.ability.extra.odds} }
+    end,
+
+    calculate = function(self, card, context)  
+        if context.before and context.main_eval and not context.blueprint then
+            local affected_card = context.scoring_hand[1]
+            for _, played_card in ipairs(context.scoring_hand) do
+                if played_card ~= affected_card then
+                    affected_card.ability.perma_bonus = (affected_card.ability.perma_bonus or 0) + played_card:get_chip_bonus() 
+                    if played_card.config.center.key ~= 'c_base' then
+                        affected_card:set_ability(played_card.config.center.key, nil, true)
+                    end
+                end
+            end
+            G.E_MANAGER:add_event(Event({
+                        func = function()
+                            affected_card:juice_up()
+                            return true
+                        end
+                    }))
+        end
+        if pseudorandom('joking_piper') < G.GAME.probabilities.normal / card.ability.extra.odds and context.destroy_card and context.cardarea == G.play and context.destroying_card and context.destroy_card ~= context.scoring_hand[1]
+        then
+            return{
+                remove = true
+            }
+        end
+    end
 }
 
 
