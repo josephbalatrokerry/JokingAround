@@ -2,8 +2,8 @@
 
 # Your average Balatro mod…
 
-That adds 29.5 new Jokers in total:
-> 7 Rare Jokers
+That adds 33 new Jokers in total:
+> 10 Rare Jokers
 
 > 12 Uncommon Jokers
 
