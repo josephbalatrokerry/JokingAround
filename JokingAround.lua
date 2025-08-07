@@ -582,8 +582,8 @@ SMODS.Joker {
     loc_txt = {
 		name = 'Pinata',
 		text = {
-			"Create a pair of random negative {C:attention}Consumables{}",
-            "when {C:attention}Blind{} is selected",
+			"Create a pair of random {C:attention}Consumables{}",
+            "when {C:attention}Blind{} is selected, space is not neccesary",
             "{C:inactive}(#1# Rounds left){}",
             "{s:0.8,C:green}#2# in #3#{s:0.8} chance for creating a {C:spectral,s:0.8}Spectral{} card,",
             "{s:0.8,C:green}#2# in #4#{s:0.8} chance for creating a {C:planet,s:0.8}Planet{} card.",
@@ -631,12 +631,10 @@ SMODS.Joker {
                             SMODS.add_card ({
                             set = consumable_1,
                             key_append = 'joking_pinata',
-                            edition = 'e_negative'
                         })
                             SMODS.add_card ({
                             set = consumable_2,
                             key_append = 'joking_pinata',
-                            edition = 'e_negative'
                         })
                         play_sound('tarot1')
                         card.T.r = -0.2
@@ -666,12 +664,10 @@ SMODS.Joker {
                         SMODS.add_card ({
                             set = consumable_1,
                             key_append = 'joking_pinata',
-                            edition = 'e_negative'
                         })
                         SMODS.add_card ({
                             set = consumable_2,
                             key_append = 'joking_pinata',
-                            edition = 'e_negative'
                         })
                         SMODS.calculate_effect({ message = 'Ouch!', colour = G.C.MULT },
                                 context.blueprint_card or card)
@@ -1833,7 +1829,6 @@ SMODS.Joker {
             "{C:green}#1# in #2#{} chance to create a {C:attention}Double Tag"
 		}
 	},
-    perishable_compat_compat = false,
     blueprint_compat = true,
     rarity = 3,
 	atlas = 'JokingAround',
@@ -1893,7 +1888,7 @@ SMODS.Joker {
 				return {
 					message = localize("k_again_ex"),
                     repetitions = 1,
-					card = card,
+					card = card
 				}
 			else
 				return nil, true
@@ -1918,7 +1913,7 @@ SMODS.Joker {
             "{C:inactive}(Currently {X:mult,C:white}X#3#{C:inactive} Mult)" 
 		}
 	},
-    perishable_compat_compat = false,
+    perishable_compat = false,
     blueprint_compat = true,
     rarity = 3,
 	atlas = 'JokingAround',
@@ -1953,6 +1948,52 @@ SMODS.Joker {
     end
 
 }
+
+
+
+
+SMODS.Joker {
+    key = "scrap",
+    unlocked = true,
+	loc_txt = {
+		name = 'Scrap Metal',
+		text = {
+			"This Joker gains {C:mult}+#1#{} Mult",
+            "per discarded {C:attention}Gold{} or {C:attention}Steel{} card",
+            "{C:inactive}(Currently {C:mult}+#2#{C:inactive})"
+		}
+	},
+    perishable_compat = false,
+    blueprint_compat = true,
+    rarity = 1,
+	atlas = 'JokingAround',
+    cost = 6,
+    pos = { x = 3, y = 6},
+    config = { extra = { mult_gain = 2, mult = 0 } },
+    loc_vars = function(self, info_queue, card)
+        info_queue[#info_queue + 1] = G.P_CENTERS.m_steel
+        info_queue[#info_queue + 1] = G.P_CENTERS.m_gold
+        return { vars = { card.ability.extra.mult_gain, card.ability.extra.mult } }
+    end,
+    calculate = function(self, card, context)
+        if context.discard and not context.blueprint and not context.other_card.debuff and (SMODS.has_enhancement(context.other_card, 'm_gold')
+            or SMODS.has_enhancement(context.other_card, 'm_steel')) then
+            card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.mult_gain
+            return {
+                message = localize('k_upgrade_ex'),
+                colour = G.C.MULT
+            }
+        end
+        if context.joker_main then
+            return
+            {
+                mult = card.ability.extra.mult
+            }
+        end
+    end
+
+}
+
 
 
 
