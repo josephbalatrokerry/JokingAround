@@ -1198,6 +1198,7 @@ SMODS.Joker {
 	},
     unlocked = true,
     blueprint_compat = true,
+	eternal_compat = false,
     rarity = 1,
     atlas = 'JokingAround',
     cost = 10,
