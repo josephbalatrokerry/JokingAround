@@ -90,6 +90,7 @@ function Game:init_game_object()
 	ret.current_round.chisel_card = { suit = 'Spades', rank = 'Ace', id = 14 }
 	ret.current_round.chisel_card_cnt = 0
     ret.current_round.joking_book_hand = 'High Card'
+    ret.current_round.even = true
 	return ret
 end
 
@@ -625,9 +626,6 @@ SMODS.Joker {
             if card.ability.extra.rounds_left <= 1 then
                 G.E_MANAGER:add_event(Event({
                     func = function()
-                        -- This replicates the food destruction effect
-                        -- If you want a simpler way to destroy Jokers, you can do card:start_dissolve() for a dissolving animation
-                        -- or just card:remove() for no animation
                             SMODS.add_card ({
                             set = consumable_1,
                             key_append = 'joking_pinata',
@@ -706,8 +704,6 @@ SMODS.Joker {
                 G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
                 return {
                     func = function()
-                        -- This is for retrigger purposes, Jokers need to return something to retrigger
-                        -- You can also do this outside the return and `return nil, true` instead
                         G.E_MANAGER:add_event(Event({
                             func = (function()
                                 G.E_MANAGER:add_event(Event({
@@ -715,7 +711,7 @@ SMODS.Joker {
                                         SMODS.add_card {
                                             set = 'Spectral',
                                             key_append = 'joking_aristocracy',
-                                            key = 'c_wraith'-- Optional, useful for checking the source of the creation in `in_pool`.
+                                            key = 'c_wraith'
                                         }
                                         G.GAME.consumeable_buffer = 0
                                         return true
@@ -1189,7 +1185,7 @@ SMODS.Joker {
     loc_txt = {
 		name = 'Revolution',
 		text = {
-			"Sell this Joker to set your money to {C:money}#4#$,",
+			"Sell this card to set your money to {C:money}#4#$,",
             "create {C:tarot}Hanged Man{} for each {C:money}#1#${} lost",
             "{C:inactive}(Space is not neccesary,",
             "{C:inactive}maximum #2#, currently #3#)"
@@ -1197,8 +1193,8 @@ SMODS.Joker {
 		}
 	},
     unlocked = true,
+    eternal_compat = false,
     blueprint_compat = true,
-	eternal_compat = false,
     rarity = 1,
     atlas = 'JokingAround',
     cost = 10,
@@ -1691,9 +1687,9 @@ SMODS.Joker {
 
 local get_straight_ref = get_straight
 
-function get_straight(hand)
+function get_straight(hand, min_length, skip, wrap)
     --checking if the joker is even there
-    if not next(SMODS.find_card("j_joking_dead")) then
+    if not next(SMODS.find_card("j_joking_dead", true)) then
         return get_straight_ref(hand)
     end
 
@@ -2001,6 +1997,97 @@ SMODS.Joker {
 
 
 SMODS.Joker {
+    key = "com",
+    loc_txt = {
+		name = 'Punch Card',
+		text = {
+            
+		}
+
+	},
+    blueprint_compat = true,
+    unlocked = true,
+    rarity = 3,
+    cost = 8,
+    atlas = 'JokingAround',
+    pos = { x = 2, y = 6 },
+    config = { extra = { chips = 40} },
+    loc_vars = function(self, info_queue, card)
+        return { vars = {} }
+    end,
+
+    calculate = function(self, card, context)  
+        if context.individual and context.cardarea == G.play then
+            if context.other_card:get_id() == 2 or
+                context.other_card:get_id() == 4 or
+                context.other_card:get_id() == 8 or
+                context.other_card:get_id() == 14 then
+                return {
+                    chips = card.ability.extra.chips
+                }
+            end
+        end
+    end
+}
+
+
+SMODS.Joker {
+    key = "split",
+    loc_txt = {
+		name = 'Split Identity',
+		text = {
+            "Retrigger cards with",
+            "{C:attention}#1#{} rank",
+            "{C:inactive}(#2#, flips between {C:attention}even",
+            "{C:inactive}and {C:attention}odd{C:inactive} every round)"
+		}
+
+	},
+    blueprint_compat = true,
+    unlocked = true,
+    rarity = 2,
+    cost = 8,
+    atlas = 'JokingAround',
+    pos = { x = 4, y = 6 },
+    config = { extra = { repetitions = 1} },
+    loc_vars = function(self, info_queue, card)
+        local state = ""
+        local ranks = ""
+        if G.GAME.current_round.even then
+            state = "even"
+            ranks = "10, 8, 6, 4, 2"
+        else
+            state = "odd"
+            ranks = "A, 9, 7, 5, 3"
+        end
+
+        return { vars = { state, ranks } }
+    end,
+    calculate = function(self, card, context)  
+        if context.repetition and context.cardarea == G.play then    
+            if ((context.other_card:get_id() <= 10 and
+                    context.other_card:get_id() >= 0 and
+                    context.other_card:get_id() % 2 == 1) or
+                (context.other_card:get_id() == 14)) and (not G.GAME.current_round.even) then
+                return {
+                    repetitions = card.ability.extra.repetitions
+                }
+            end
+            if (context.other_card:get_id() <= 10 and
+                context.other_card:get_id() >= 0 and
+                context.other_card:get_id() % 2 == 0) and G.GAME.current_round.even then
+                return {
+                    repetitions = card.ability.extra.repetitions
+                }
+            end
+
+        end
+    end
+}
+
+
+
+SMODS.Joker {
     key = "piper",
     loc_txt = {
 		name = 'Pied Piper',
@@ -2062,8 +2149,13 @@ local function reset_joking_book_hand()
     G.GAME.current_round.joking_book_hand = pseudorandom_element(_poker_hands, pseudoseed('vremade_to_do'))
 end
 
+local function flip_joking_even()
+    G.GAME.current_round.even = not G.GAME.current_round.even
+end
+
 function SMODS.current_mod.reset_game_globals(run_start)
     reset_joking_book_hand()
+    flip_joking_even()
 end
 
 
