@@ -1690,7 +1690,7 @@ local get_straight_ref = get_straight
 function get_straight(hand, min_length, skip, wrap)
     --checking if the joker is even there
     if not next(SMODS.find_card("j_joking_dead", true)) then
-        return get_straight_ref(hand)
+        return get_straight_ref(hand, min_length, skip, wrap)
     end
 
     local ret = {}
@@ -1717,12 +1717,12 @@ function get_straight(hand, min_length, skip, wrap)
             if not(RANKS[i + 1] - RANKS[i] == 2 and can_skip) then
                 if i == 2 or i == 3 then
                     if break_amount > 0 then
-                        return get_straight_ref(hand)
+                        return get_straight_ref(hand, min_length, skip, wrap)
                     else
                     break_amount = break_amount + 1
                     end
                 else
-                    return get_straight_ref(hand)
+                    return get_straight_ref(hand, min_length, skip, wrap)
                 end
 
 
