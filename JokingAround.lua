@@ -734,9 +734,9 @@ SMODS.Joker {
     loc_txt = {
 		name = 'Ransom Joker',
 		text = {
-            "When a hand is played, add {C:attention}arithmetic mean{} of Chips",
+            "When a hand is played, add halved {C:attention}arithmetic mean{} of Chips",
             "of all scored cards to this Joker's Chips",
-            "{C:inactive}(Currently {C:blue}+#1#{C:inactive} Chips, can gain maximum #2# Chips per hand)"
+            "{C:inactive}(Currently {C:blue}+#1#{C:inactive} Chips)"
 		}
 	},
     unlocked = true,
@@ -745,7 +745,7 @@ SMODS.Joker {
     cost = 6,
     atlas = 'JokingAround',
     pos = { x = 0, y = 2 },
-    config = { extra = {chips = 0, cap = 25} },
+    config = { extra = {chips = 0} },
     loc_vars = function(self, info_queue, card)
         return { vars = {card.ability.extra.chips, card.ability.extra.cap} }
     end,
@@ -756,7 +756,7 @@ SMODS.Joker {
             for _, scored_card in ipairs(context.scoring_hand) do
                 chip_mod = chip_mod + scored_card:get_chip_bonus() 
             end
-            chip_mod = math.min(card.ability.extra.cap, math.ceil((chip_mod / #context.scoring_hand)))
+            chip_mod = math.ceil(math.ceil((chip_mod / #context.scoring_hand)) / 2)
             card.ability.extra.chips = card.ability.extra.chips + chip_mod
             return {
                 message = localize('k_upgrade_ex'),
@@ -1690,7 +1690,7 @@ local get_straight_ref = get_straight
 function get_straight(hand, min_length, skip, wrap)
     --checking if the joker is even there
     if not next(SMODS.find_card("j_joking_dead", true)) then
-        return get_straight_ref(hand)
+        return get_straight_ref(hand, min_length, skip, wrap)
     end
 
     local ret = {}
@@ -1717,12 +1717,12 @@ function get_straight(hand, min_length, skip, wrap)
             if not(RANKS[i + 1] - RANKS[i] == 2 and can_skip) then
                 if i == 2 or i == 3 then
                     if break_amount > 0 then
-                        return get_straight_ref(hand)
+                    return get_straight_ref(hand, min_length, skip, wrap)
                     else
                     break_amount = break_amount + 1
                     end
                 else
-                    return get_straight_ref(hand)
+                    return get_straight_ref(hand, min_length, skip, wrap)
                 end
 
 
@@ -1997,23 +1997,25 @@ SMODS.Joker {
 
 
 SMODS.Joker {
-    key = "com",
+    key = "punch",
     loc_txt = {
 		name = 'Punch Card',
 		text = {
-            
+            "Played cards with {C:attention}2{}, {C:attention}4{}, {C:attention}8{}, {C:attention}Ace{}",
+            "ranks earn {C:money}$#1#{} when scored" 
 		}
 
 	},
     blueprint_compat = true,
     unlocked = true,
-    rarity = 3,
-    cost = 8,
+    rarity = 1,
+    cost = 6,
     atlas = 'JokingAround',
-    pos = { x = 2, y = 6 },
-    config = { extra = { chips = 40} },
+    pos = { x = 1, y = 7 },
+        pixel_size = { w = 73 },
+    config = { extra = { dollars = 2} },
     loc_vars = function(self, info_queue, card)
-        return { vars = {} }
+        return { vars = { card.ability.extra.dollars} }
     end,
 
     calculate = function(self, card, context)  
@@ -2022,9 +2024,80 @@ SMODS.Joker {
                 context.other_card:get_id() == 4 or
                 context.other_card:get_id() == 8 or
                 context.other_card:get_id() == 14 then
-                return {
-                    chips = card.ability.extra.chips
-                }
+                 G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + card.ability.extra.dollars
+            return {
+                dollars = card.ability.extra.dollars,
+                func = function()
+                    G.E_MANAGER:add_event(Event({
+                        func = function()
+                            G.GAME.dollar_buffer = 0
+                            return true
+                        end
+                    }))
+                end
+            }
+            end
+        end
+    end
+}
+
+
+
+
+SMODS.Joker {
+    key = "glass",
+    loc_txt = {
+		name = 'Glass Bones',
+		text = {
+            "Shattering a {C:attention}Glass{} card adds a",
+            "{C:attention}polychrome{} copy of",
+            "said playing card to your {C:attention}deck"
+		}
+
+	},
+    blueprint_compat = false,
+    unlocked = true,
+    rarity = 2,
+    cost = 8,
+    atlas = 'JokingAround',
+    pos = { x = 0, y = 7 },
+    config = { extra = { dollars = 2} },
+    loc_vars = function(self, info_queue, card)
+        return { vars = {} }
+    end,
+
+    calculate = function(self, card, context)  
+        if context.remove_playing_cards and not context.blueprint then
+            local glass_cards = 0
+            for _, removed_card in ipairs(context.removed) do
+                if removed_card.shattered then 
+                    local _card = SMODS.create_card { set = "Base", area = G.discard }
+            G.playing_card = (G.playing_card and G.playing_card + 1) or 1
+            _card.playing_card = G.playing_card
+
+            _card:set_edition("e_polychrome", true)
+            assert(SMODS.modify_rank(_card, -_card:get_id() + removed_card:get_id()))
+            SMODS.change_base(_card, removed_card.base.suit)
+
+            table.insert(G.playing_cards, _card)
+
+            G.E_MANAGER:add_event(Event({
+                func = function()
+                    G.hand:emplace(_card)
+                    _card:start_materialize()
+                    G.GAME.blind:debuff_card(_card)
+                    G.hand:sort()
+                    if context.blueprint_card then
+                        context.blueprint_card:juice_up()
+                    else
+                        card:juice_up()
+                    end
+                    SMODS.calculate_context({ playing_card_added = true, cards = { _card } })
+                    save_run()
+                    return true
+                end
+            }))
+                end
             end
         end
     end
