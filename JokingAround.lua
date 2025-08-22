@@ -2207,7 +2207,7 @@ SMODS.Joker {
     cost = 5,
     atlas = 'JokingAround',
     pos = { x = 2, y = 8 },
-    config = { extra = { mult = 20, money = 10 } },
+    config = { extra = { mult = 15, money = 10 } },
     loc_vars = function(self, info_queue, card)
         
         return { vars = {card.ability.extra.mult, card.ability.extra.money }}
