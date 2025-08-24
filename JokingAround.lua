@@ -2315,7 +2315,8 @@ SMODS.Joker {
 		text = {
             "Store all gained {C:money}money{}",
             "in this card, gain {X:money,C:white}X#2#",
-            "of stored money when {C:attention}Boss Blind{} is defeated",
+            "of stored money when",
+            "{C:attention}Boss Blind{} is defeated",
 			"{C:inactive}(Currently {C:money}$#1#{C:inactive})"
 		}
 	},
@@ -2352,6 +2353,118 @@ SMODS.Joker {
 
 
 
+
+SMODS.Joker {
+    key = "check",
+    blueprint_compat = true,
+    rarity = 2,
+    cost = 6,
+    pixel_size = { w = 68, h = 92 },
+    loc_txt = {
+		name = 'Checkerboard',
+		text = {
+            "{X:red,C:white} X#1# {} Mult if scored",
+            "cards have{C:attention} alternating suits",
+            "and {C:attention}3{} or more cards are scored",
+            "{C:inactive}(ex: {C:hearts}Hearts{}, {C:spades}Spades{C:inactive}, {C:hearts}Hearts{C:inactive}, {C:spades}Spades{C:inactive})"
+		}
+	},
+    pos = { x = 4, y = 8 },
+    atlas = 'JokingAround',
+    config = { extra = { xmult = 3 } },
+    loc_vars = function(self, info_queue, card)
+        return { vars = { card.ability.extra.xmult, } }
+    end,
+    calculate = function(self, card, context)
+        if context.joker_main then
+                local alternating_suits = true
+                local temp = ''
+                if #context.scoring_hand >= 3 then 
+
+                local first_suit = context.scoring_hand[1].base.suit
+                local second_suit = context.scoring_hand[2].base.suit
+                for ind, playing_card in ipairs(context.scoring_hand) do
+                    if ind == #context.scoring_hand - 1 then
+                        break
+                    end 
+                    if not (context.scoring_hand[ind]:is_suit(first_suit) and context.scoring_hand[ind + 1]:is_suit(second_suit)) then
+                        alternating_suits = false
+                        break 
+                    end
+                    temp = first_suit
+                    first_suit = second_suit
+                    second_suit = temp
+                end
+
+                if alternating_suits then
+                    return
+                    {
+                        xmult = card.ability.extra.xmult
+                    }
+                end
+            end
+        end
+    end
+}
+
+
+
+SMODS.Joker {
+    key = "assembly",
+    blueprint_compat = true,
+    rarity = 2,
+    cost = 7,
+     loc_txt = {
+		name = 'Assembly Line',
+		text = {
+            "{X:red,C:white}X#1#{} Mult if there",
+            "is only one {C:attention}rank{} held in hand"
+		}
+	},
+    pos = { x = 0, y = 9 },
+    atlas = 'JokingAround',
+    config = { extra = { xmult = 3 } },
+    loc_vars = function(self, info_queue, card)
+        return { vars = { card.ability.extra.xmult, } }
+    end,--[[ 
+    calculate = function(self, card, context)
+        if context.joker_main then
+            local unique_ranks = true
+            local ranks = {}
+            for _, playing_card in ipairs(G.hand.cards) do
+                table.insert(ranks, playing_card:get_id())
+            end
+
+            table.sort(ranks)
+
+            for ind, rank in ipairs(ranks) do
+                if ranks[ind + 1] == rank then unique_ranks = false end
+            end
+
+            if unique_ranks then
+                return {
+                    xmult = card.ability.extra.xmult
+                }
+            end
+        end
+    end ]]
+    calculate = function(self, card, context)
+        if context.joker_main then
+            local not_unique_ranks = true
+            for _, held_card in ipairs(G.hand.cards) do
+                if held_card:get_id() ~= G.hand.cards[1]:get_id() then
+                    not_unique_ranks = false
+                end
+            end
+            if not_unique_ranks then
+                return
+                {
+                    xmult = card.ability.extra.xmult
+                }
+            end
+        end
+    end
+}
 
 
 SMODS.Joker {
