@@ -17,7 +17,7 @@ SMODS.ConsumableType {
 SMODS.Atlas {
 	key = "JokingAroundChess",
 	path = "JokingAroundChess.png",
-	px = 71,
+	px = 70,
 	py = 94
 }
 
