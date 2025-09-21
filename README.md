@@ -2,10 +2,10 @@
 
 # Your average Balatro mod…
 
-That adds 42 new Jokers in total:
-> 10 Rare Jokers
+That adds 51 new Jokers in total:
+> 12 Rare Jokers
 
-> 17 Uncommon Jokers
+> 23 Uncommon Jokers
 
 > 13 Common Jokers
 
@@ -22,4 +22,4 @@ Oh, and there's also one new Deck - Everchanging Deck. I dare you to run Baron +
 
 (USES QUANTUM ENHANCEMENTS AND JOKER RETRIGGERS! May cause weird behaviour when combined with other mods)
 
-### Made by Temmy1 (real name Jo.Ker, Joe Kerry) with help of my brother (real name Po.Ker, Poe Kerry) and [Balatro's Discord server](https://discord.com/invite/balatro)
+### Made by Temmy1 (real name Joe Kerr) with help of my brother (real name Poe Kerr) and [Balatro's Discord server](https://discord.com/invite/balatro)
