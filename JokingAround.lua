@@ -10,7 +10,6 @@ SMODS.Atlas {
 
 assert(SMODS.load_file("src/Chess.lua"))()
 assert(SMODS.load_file("src/Boosters.lua"))()
-assert(SMODS.load_file("src/Tags.lua"))()
 assert(SMODS.load_file("src/Backs.lua"))()
 assert(SMODS.load_file("src/Jokers.lua"))()
 
