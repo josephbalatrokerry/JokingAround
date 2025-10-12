@@ -2507,7 +2507,7 @@ SMODS.Joker {
 	atlas = 'JokingAround',
     cost = 6,
     pos = { x = 3, y = 9},
-    config = { extra = { odds = 1 } },
+    config = { extra = { } },
     loc_vars = function(self, info_queue, card)
         return { vars = { G.GAME.probabilities.normal, card.ability.extra.odds } }
     end,
@@ -2558,7 +2558,7 @@ SMODS.Joker {
     rarity = 2,
 	atlas = 'JokingAround',
     cost = 6,
-    pos = { x = 4, y = 7 },
+    pos = { x = 4, y = 9},
     config = { extra = { type = 'Five of a Kind' } },
     loc_vars = function(self, info_queue, card)
         return { vars = { card.ability.extra.type} }
@@ -3051,7 +3051,7 @@ SMODS.Joker {
             "It's sad how the strongest interaction with Jacks here is discarding them.",
             "George Poker Flush and Al Score's election was pointless. They could've just played a round of poker!",
             "Jimbo is so narcissictic he started naming mountains after himself!",
-            "My advice for you: Never drink paint.",
+            "My advice for you: Never drink paint",
             "With Chips from this Bag of Chips you can buy an actual Bag of Chips."
             }
 
