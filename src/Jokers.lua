@@ -6,6 +6,102 @@ SMODS.Atlas {
 }
 
 
+SMODS.Joker {
+    key = "joe",
+    loc_txt = {
+		name = 'Joe King',
+		text = {
+            "{C:attention}Face{} cards permanently gain {C:mult}+#1#{} mult",
+            "when scored"
+		}
+	},
+    blueprint_compat = true,
+    rarity = 1,
+    atlas = 'JokingAround',
+    cost = 6,
+    pos = { x = 3, y = 11 },
+    config = { extra = { mult = 2 } },
+    loc_vars = function(self, info_queue, card)
+        return { vars = { card.ability.extra.mult } }
+    end,
+    calculate = function(self, card, context)
+        if context.individual and context.cardarea == G.play and context.other_card:is_face() then
+            context.other_card.ability.perma_mult = (context.other_card.ability.perma_mult or 0) +
+                card.ability.extra.mult
+            return {
+                message = localize('k_upgrade_ex'),
+                colour = G.C.MULT
+            }
+        end
+    end
+}
+
+
+SMODS.Joker {
+    key = "smiley",
+    loc_txt = {
+		name = 'Smiley Face Jr.',
+		text = {
+            '"{C:money}#1#{}"',
+            "{C:money}(C) Smilington Facezergald Junior",
+            "{C:money}This Joker gives {C:chips}+#2#{C:money} Chips for each Jack held in hand",
+            "{C:money}and talks a lot"
+            
+            
+        }
+	},
+    unlocked = true,
+    blueprint_compat = true,
+    rarity = 1,
+    cost = 6,
+    pos = { x = 6, y = 15 },
+    display_size = { w = 71 * 0.5, h = 95 * 0.5 },
+
+    config = { extra = { chips = 70 } },
+    loc_vars = function(self, info_queue, card)
+
+        local text = {
+            "Look, I am on this mod's icon!",
+            "My father has a tough relationship with Pareidolia. Deep down he knows that 3 of Diamonds isn't actually a face card.",
+            "Jimbo's middle name is James. Don't tell anybody!",
+            "I visited Joker's Deli once, but their bananas kept going extinct before I could bite into them.",
+            "Smiley Face is the best combo with Photograph! Don't listen to Hanging Chad propaganda!",
+            "Scary Face is actually me with the lights turned off.",
+            "Before meeting Ride the Bus I thought yellow was synonymous with face cards!",
+            "Harvey Ball practically created the Facezergald lineage, have you heard of him?",
+            "Midas Mask may turn cards gold, but you're supposed to play them instead of boring them to death in your hand!",
+            "Quite ironic how the strongest build in this poker machine is a synergy between a rich guy and French guy.",
+            "It's sad how the strongest interaction with Jacks here is discarding them.",
+            "George Poker Flush and Al Score's election was pointless. They could've just played a round of poker!",
+            "Jimbo is so narcissictic he started naming mountains after himself!",
+            "My advice for you: Never drink paint.",
+            "With Chips from Bag of Chips you can buy an actual Bag of Chips.",
+            "I think there was a Winston Smith joker once. Was there?",
+            "Gun rhymes with fun! And that's what Facezergalds are all about. (Except Frowny Face.)",
+            "I think there's actually Joker Cola in that cauldron."
+        }
+
+        res = pseudorandom_element(text, pseudoseed('joking_smiley' .. G.GAME.round_resets.ante))
+        return { vars = { res, card.ability.extra.chips } }
+    end,
+
+    calculate = function(self, card, context)
+        if context.individual and context.cardarea == G.hand and not context.end_of_round and context.other_card:get_id() == 11 then
+            if context.other_card.debuff then
+                return {
+                    message = localize('k_debuffed'),
+                    colour = G.C.RED
+                }
+            else
+                return {
+                    chips = card.ability.extra.chips
+                }
+            end
+        end
+    end,
+
+}
+
 
 SMODS.Joker {
     key = "bonus",
@@ -200,7 +296,7 @@ SMODS.Joker {
 		text = {	
 			"When {C:attention}Blind{} is selected, set Hands to {C:chips}#1#{},",
 			"retrigger all played cards for each",
-			"Hand lost this way"
+			"hand lost this way"
 		}
 	},
     blueprint_compat = true,
@@ -249,8 +345,8 @@ SMODS.Joker {
 	loc_txt = {
 		name = 'Shopaholism',
 		text = {
-			"This Joker gains {X:mult,C:white}X#1#{} Mult when a Joker is bought,",
-			"resets when a Joker is sold",
+			"This Joker gains {X:mult,C:white}X#1#{} Mult when a Joker is {C:attention}bought,",
+			"resets when a Joker is {C:attention}sold",
 			"{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive} Mult)"
 		}
 	},
@@ -1566,7 +1662,7 @@ SMODS.Joker {
 		name = 'Prayer Card',
 		text = {
             "Create a random {C:tarot}Tarot{}",
-            "card when scoring a hand with at least",
+            "card when playing a hand with at least",
             "{C:attention}#1#{} scored {C:attention}enhanced{} cards"
         }
 
@@ -1599,7 +1695,7 @@ SMODS.Joker {
                         func = function()
                             SMODS.add_card {
                                 set = 'Tarot',
-                                key_append = 'vremade_prayer' -- Optional, useful for manipulating the random seed and checking the source of the creation in `in_pool`.
+                                key_append = 'vremade_prayer'
                             }
                             G.GAME.consumeable_buffer = 0
                             return true
@@ -1610,7 +1706,7 @@ SMODS.Joker {
                     return true
                 end)
             }))
-            return nil, true -- This is for Joker retrigger purposes
+            return nil, true 
         end
         end
     end
@@ -2633,7 +2729,7 @@ SMODS.Joker {
 	loc_txt = {
 		name = "Mt. Joker",
 		text = {
-			"If scored hand is a {C:attention}Straight{},",
+			"If played hand is a {C:attention}Straight{},",
             "add {C:attention}double{} the highest rank to {C:attention}Mult"
 	    },
     },
@@ -2670,8 +2766,8 @@ SMODS.Joker {
 	loc_txt = {
 		name = "Bucket of Paint",
 		text = {
-			"First scored card gives you it's {C:attention}rank{}",
-            "as {C:mult}Mult{} when scored"
+			"First played card adds it's {C:attention}rank{}",
+            "to {C:mult}Mult{} when scored"
 	    },
     },
     loc_vars = function(self, info_queue, card)
@@ -2698,6 +2794,7 @@ SMODS.Joker {
 SMODS.Joker {
     key = "bag",
     blueprint_compat = true,
+    eternal_compat = false,
     rarity = 2,
     cost = 6,
     pos = { x = 2, y = 11 },
@@ -2717,20 +2814,41 @@ SMODS.Joker {
     
     calculate = function(self, card, context)
         if context.individual and context.cardarea == G.play then
-            if card.ability.extra.total_chips >= card.ability.extra.chips then
-                context.other_card.ability.perma_bonus = (context.other_card.ability.perma_bonus or 0) + card.ability.extra.chips
+            context.other_card.ability.perma_bonus = (context.other_card.ability.perma_bonus or 0) + card.ability.extra.chips
+            if not context.blueprint then
                 card.ability.extra.total_chips = card.ability.extra.total_chips - card.ability.extra.chips
-                return {
-                    message = localize('k_upgrade_ex'),
-                    colour = G.C.CHIPS
-                }
-            else
-            SMODS.destroy_cards(card, nil, nil, true)
-                return {
-                    message = localize('k_eaten_ex'),
-                    colour = G.C.FILTER
-                }
             end
+            return 
+            {
+                message = localize('k_upgrade_ex'),
+                colour = G.C.CHIPS
+                }
+
+        end
+        if card.ability.extra.total_chips <= 0 then
+
+                G.E_MANAGER:add_event(Event({
+                    func = function()
+
+                        play_sound('tarot1')
+                        card.T.r = -0.2
+                        card:juice_up(0.3, 0.4)
+                        card.states.drag.is = true
+                        card.children.center.pinch.x = true
+                        G.E_MANAGER:add_event(Event({
+                            trigger = 'after',
+                            delay = 0.3,
+                            blockable = false,
+                            func = function()
+                                card:remove()
+                                return true
+                            end
+                        }))
+                        message = 'Eaten!'
+                        return true
+                    end
+                }))
+
         end
     end
 }
@@ -2899,7 +3017,7 @@ SMODS.Joker {
             "All {C:attention}Jokers{} are {C:attention}free"
 		}
 	},
-    unlocked = false,
+    unlocked = true,
     blueprint_compat = false,
     rarity = 3,
     cost = 8,
@@ -2936,6 +3054,140 @@ function Card:set_cost()
         self.sell_cost_label = self.facing == 'back' and '?' or self.sell_cost
     end
 end
+
+
+
+SMODS.Joker {
+    key = "literally1984",
+    loc_txt = {
+		name = 'Double Think',
+		text = {
+            "{C:spades}Spades{} and {C:clubs}Clubs{} count as {C:attention}all suits{}",
+            "{C:diamonds}Diamonds{} and {C:hearts}Hearts{} count as having {C:attention}no suit"
+		}
+	},
+    blueprint_compat = false,
+    atlas = 'JokingAround',
+    rarity = 2,
+    cost = 8,
+    pos = { x = 0, y = 12 },
+    config = { extra = { } }
+}
+
+
+local smods_has_no_suit_ref = SMODS.has_no_suit
+function SMODS.has_no_suit(playing_card)
+    local ret = smods_has_no_suit_ref(playing_card)
+    if next(SMODS.find_card("j_joking_literally1984")) then
+        if playing_card.base.suit == "Hearts" or playing_card.base.suit == "Diamonds" then
+            return false
+        else
+            return ret
+        end
+    end
+    return ret
+end
+
+local card_is_suit_ref = Card.is_suit
+function Card:is_suit(suit, bypass_debuff, flush_calc)
+    local ret = card_is_suit_ref(self, suit, bypass_debuff, flush_calc)
+    if next(SMODS.find_card("j_joking_literally1984")) then
+        if self.base.suit == "Hearts" or self.base.suit == "Diamonds" then
+            return false
+        else
+            return true
+        end
+    end
+    return ret
+end
+
+
+
+SMODS.Joker {
+    key = "bullet",
+    loc_txt = {
+		name = 'Bullet Speed',
+		text = {
+            "When playing a {C:attention}Straight Flush{}",
+            "this Joker gains {X:mult,C:white}X#1#{} Mult",
+            "{C:inactive}Currently {X:mult,C:white}X#2#{C:inactive})"
+        }
+	},
+    blueprint_compat = true,
+    unlocked = true,
+    perishable_compat = false,
+    rarity = 2,
+    cost = 6,
+    atlas = 'JokingAround',
+    pos = { x = 1, y = 12 },
+    config = { extra = { xmult = 1, xmult_gain = 0.75} },
+    loc_vars = function(self, info_queue, card)
+        return { vars = { card.ability.extra.xmult_gain, card.ability.extra.xmult } }
+    end,
+
+    calculate = function(self, card, context)  
+        if context.before and context.main_eval and not context.blueprint then
+            if next(context.poker_hands['Straight Flush']) then
+                card.ability.extra.xmult = card.ability.extra.xmult + card.ability.extra.xmult_gain
+                return {
+                    message = localize('k_upgrade_ex'),
+                    colour = G.C.RED
+                }
+            end
+        end
+        if context.joker_main then
+            return
+            {
+                xmult = card.ability.extra.xmult
+            }
+        end
+    end
+
+}
+
+
+
+
+
+SMODS.Joker {
+    key = "cauldron",
+    loc_txt = {
+		name = 'Cauldron',
+		text = {
+            "All played {C:attention}enhanced{} cards",
+            "give {C:money}$#1#{} when scored"
+        }
+	},
+    blueprint_compat = true,
+    unlocked = true,
+    rarity = 1,
+    cost = 5,
+    atlas = 'JokingAround',
+    pos = { x = 3, y = 12 },
+    config = { extra = { dollars = 1} },
+    loc_vars = function(self, info_queue, card)
+        return { vars = {G.GAME.probabilities.normal, card.ability.extra.odds } }
+    end,
+
+    calculate = function(self, card, context)  
+        if context.individual and context.cardarea == G.play then
+            if next(SMODS.get_enhancements(context.other_card)) then
+                return
+                {
+                    dollars = card.ability.extra.dollars,
+                    func = function()
+                        G.E_MANAGER:add_event(Event({
+                            func = function()
+                                G.GAME.dollar_buffer = 0
+                                return true
+                            end
+                        }))
+                    end
+                }
+            end
+        end
+    end
+}
 
 
 
@@ -3013,65 +3265,3 @@ end
 
 
 
-
-SMODS.Joker {
-    key = "smiley",
-    loc_txt = {
-		name = 'Smiley Face Jr',
-		text = {
-            '"{C:money}#1#{}"',
-            "{C:money}(C) Smilington Facezergald Junior",
-            "{C:money}This Joker gives {C:chips}+#2#{C:money} for each Jack held in hand",
-            "{C:money}and talks a lot"
-            
-            
-        }
-	},
-    unlocked = true,
-    blueprint_compat = false,
-    rarity = 1,
-    cost = 6,
-    pos = { x = 6, y = 15 },
-    display_size = { w = 71 * 0.5, h = 95 * 0.5 },
-
-    config = { extra = { chips = 70 } },
-    loc_vars = function(self, info_queue, card)
-
-        local text = {
-            "Look, I am on this mod's icon!",
-            "My father has a tough relationship with Pareidolia. Deep down he knows that 3 of Diamonds isn't actually a face card.",
-            "Jimbo's middle name is James. Don't tell anybody!",
-            "I visited Joker's Deli once, but their bananas kept going extinct before I could bite into them.",
-            "Smiley Face is the best combo with Photograph! Don't listen to Hanging Chad propaganda!",
-            "Scary Face is actually me with the lights turned off.",
-            "Before meeting Ride the Bus I thought yellow was synonymous with face cards!",
-            "Harvey Ball practically created the Facezergald lineage, have you heard of him?",
-            "Midas Mask may turn cards gold, but you're supposed to play them instead of boring them to death in your hand!",
-            "Quite ironic how the strongest build in this poker machine is a synergy between a rich guy and French guy.",
-            "It's sad how the strongest interaction with Jacks here is discarding them.",
-            "George Poker Flush and Al Score's election was pointless. They could've just played a round of poker!",
-            "Jimbo is so narcissictic he started naming mountains after himself!",
-            "My advice for you: Never drink paint",
-            "With Chips from this Bag of Chips you can buy an actual Bag of Chips."
-            }
-
-        res = pseudorandom_element(text, pseudoseed('joking_smiley' .. G.GAME.round_resets.ante))
-        return { vars = { res, card.ability.extra.chips } }
-    end,
-
-    calculate = function(self, card, context)
-        if context.individual and context.cardarea == G.hand and not context.end_of_round and context.other_card:get_id() == 11 then
-            if context.other_card.debuff then
-                return {
-                    message = localize('k_debuffed'),
-                    colour = G.C.RED
-                }
-            else
-                return {
-                    chips = card.ability.extra.chips
-                }
-            end
-        end
-    end,
-
-}
